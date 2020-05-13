@@ -33,6 +33,10 @@ class Welcome final : public QWidget {
  Q_SIGNALS: // Signals
   void repositoryOpened(const QString &path);
 
+ private Q_SLOTS: // Slots
+  void openRepository();
+  void closeApplication();
+
  public: // Constructors
   Welcome(bool debug, QWidget *parent);
 };

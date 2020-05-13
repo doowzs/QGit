@@ -23,10 +23,12 @@ Welcome::Welcome(bool debug, QWidget *parent) : QWidget(parent), debug(debug) {
 
   openButton = new QPushButton(this);
   openButton->setText("打开仓库");
+  connect(openButton, SIGNAL(released()), this, SLOT(openRepository()));
   welcomeLayout->addWidget(openButton);
 
   exitButton = new QPushButton(this);
   exitButton->setText("退出程序");
+  connect(exitButton, SIGNAL(released()), this, SLOT(closeApplication()));
   welcomeLayout->addWidget(exitButton);
 
   versionLabel = new QLabel(this);
@@ -41,4 +43,28 @@ Welcome::Welcome(bool debug, QWidget *parent) : QWidget(parent), debug(debug) {
 
   this->parentWidget()->setWindowTitle("欢迎使用");
   this->setLayout(welcomeLayout);
+}
+
+/**
+ * Slot: when open button is clicked, use a dialog to let user choose a repository.
+ * After choosing a repository, check its data and emit signal for root to handle.
+ */
+void Welcome::openRepository() {
+  QString path = QFileDialog::getExistingDirectory(this, "选择仓库目录");
+  if (debug) {
+    qDebug() << "open directory" << path;
+  }
+  // TODO: check the folder is a repository
+  emit repositoryOpened(path);
+}
+
+/**
+ * Slot: when exit button is clicked, close the root window and exit.
+ */
+void Welcome::closeApplication() {
+  if (debug) {
+    qDebug() << "exited from welcome widget";
+  }
+  // Exit the application by directly closing the root window.
+  this->parentWidget()->close();
 }
