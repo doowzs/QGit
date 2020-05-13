@@ -13,7 +13,9 @@
 namespace QGit {
 namespace Constants {
 namespace Application {
-const QString name = "QGit: A Qt based Git browser.";
+const int year = 2020;
+const QString name = "QGit";
+const QString description = "QGit: A Qt based Git browser.";
 const QString author = "Tianyun Zhang";
 const QVersionNumber version(CMAKE_VERSION_MAJOR, CMAKE_VERSION_MINOR, CMAKE_VERSION_PATCH);
 }// namespace Application

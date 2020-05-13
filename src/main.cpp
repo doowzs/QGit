@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   QApplication application(argc, argv);
 
   QApplication::setOrganizationName(Constants::Application::author);
-  QApplication::setApplicationName(Constants::Application::name);
+  QApplication::setApplicationName(Constants::Application::description);
   QApplication::setApplicationVersion(Constants::Application::version.toString());
 
   QCommandLineParser parser;

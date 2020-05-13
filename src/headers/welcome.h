@@ -10,6 +10,10 @@
 
 #include <QtCore>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QFileDialog>
 
 namespace QGit {
 class Welcome final : public QWidget {
@@ -17,6 +21,14 @@ class Welcome final : public QWidget {
 
  private: // Members
   const bool debug;
+
+ private: // Widgets
+  QVBoxLayout *welcomeLayout{};
+  QLabel *titleLabel{};
+  QPushButton *openButton{};
+  QPushButton *exitButton{};
+  QLabel *versionLabel{};
+  QLabel *authorLabel{};
 
  Q_SIGNALS: // Signals
   void repositoryOpened(const QString &path);
