@@ -1,13 +1,14 @@
 #include "constants.h"
-#include <QCoreApplication>
+#include "root.h"
+#include <QApplication>
 using namespace QGit;
 
 int main(int argc, char *argv[]) {
-  QCoreApplication application(argc, argv);
+  QApplication application(argc, argv);
 
-  QCoreApplication::setOrganizationName(Constants::Application::author);
-  QCoreApplication::setApplicationName(Constants::Application::name);
-  QCoreApplication::setApplicationVersion(Constants::Application::version.toString());
+  QApplication::setOrganizationName(Constants::Application::author);
+  QApplication::setApplicationName(Constants::Application::name);
+  QApplication::setApplicationVersion(Constants::Application::version.toString());
 
   QCommandLineParser parser;
   parser.setApplicationDescription(QCoreApplication::applicationName());
@@ -22,5 +23,9 @@ int main(int argc, char *argv[]) {
   parser.process(application);
   bool debug = parser.isSet(debugOption);
 
-  return QCoreApplication::exec();
+  // start the root / main window
+  Root root(debug, nullptr);
+  root.show();
+
+  return QApplication::exec();
 }

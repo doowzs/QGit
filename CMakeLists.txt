@@ -17,8 +17,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 qt5_wrap_cpp(CMAKE_CXX_SOURCES ${CMAKE_CXX_HEADERS})
 add_executable(qgit ${CMAKE_CXX_SOURCES})
-target_link_libraries(qgit Qt5::Core)
+target_link_libraries(qgit Qt5::Core Qt5::Widgets)
