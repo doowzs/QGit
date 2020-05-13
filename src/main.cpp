@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   bool debug = parser.isSet(debugOption);
 
   // start the root / main window
-  Root root(debug, nullptr);
+  Root root(debug, nullptr, nullptr);
   root.show();
 
   return QApplication::exec();

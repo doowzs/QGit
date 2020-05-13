@@ -6,12 +6,14 @@
  */
 
 #include "root.h"
-
-namespace QGit {
+#include "welcome.h"
+using namespace QGit;
 
 /**
  * Initialize a root / main window with path to git repository.
  */
-Root::Root(bool debug, QString path, QWidget *parent) : QMainWindow(parent), debug(debug), path(std::move(path)) {}
+Root::Root(bool debug, QString path, QWidget *parent) : QMainWindow(parent), debug(debug), path(std::move(path)) {
+  welcomeWidget = new Welcome(debug, this);
 
-}// namespace QGit
+  this->setCentralWidget(welcomeWidget);
+}

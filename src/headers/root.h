@@ -13,15 +13,20 @@
 #include <QtWidgets/QMainWindow>
 
 namespace QGit {
+QT_FORWARD_DECLARE_CLASS(Welcome)
+
 class Root final : public QMainWindow {
  Q_OBJECT
 
- private:// Members
+ private: // Members
   const bool debug;
   QString path;
 
- public:// Constructors
-  Root(bool debug, QString path, QWidget *parent = nullptr);
+ private: // Widgets
+  Welcome *welcomeWidget{};
+
+ public: // Constructors
+  Root(bool debug, QString path, QWidget *parent);
 };
 }// namespace QGit
 
