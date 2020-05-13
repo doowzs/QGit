@@ -54,8 +54,11 @@ void Welcome::openRepository() {
   if (debug) {
     qDebug() << "open directory" << path;
   }
-  // TODO: check the folder is a repository
-  emit repositoryOpened(path);
+  if (QDir(path + "/.git").exists()) {
+    emit repositoryOpened(path);
+  } else {
+    QMessageBox::about(this, "错误", "打开的目录不是Git仓库");
+  }
 }
 
 /**

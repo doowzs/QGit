@@ -14,6 +14,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 namespace QGit {
 class Welcome final : public QWidget {
