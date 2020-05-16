@@ -6,6 +6,7 @@
  */
 
 #include "repository.h"
+#include "reference/list.h"
 using namespace QGit;
 
 /**
@@ -16,20 +17,10 @@ using namespace QGit;
  */
 Repository::Repository(bool debug, const QString &path, QWidget *parent)
     : QWidget(parent), debug(debug), root(path + "/.git") {
-  QDir headsDir = QDir(root + "/refs/heads");
-  QStringList headsList = headsDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
-  for (const QString &head : headsList) {
-    QFile headFile = QFile(root + "/refs/heads/" + head);
-    try {
-      headFile.open(QFile::ReadOnly);
-      QString hash = QString(headFile.read(40));
-      headFile.close();
-      heads[head] = hash;
-      if (debug) {
-        qDebug() << "ref" << head << hash;
-      }
-    } catch (QException e) {
-      qDebug() << "error:" << e.what() << "when reading ref" << head;
-    }
-  }
+  repositoryLayout = new QHBoxLayout(this);
+
+  referenceListWidget = new Reference::List(debug, root + "/refs/heads", this);
+  repositoryLayout->addWidget(referenceListWidget);
+
+  this->setLayout(repositoryLayout);
 }
