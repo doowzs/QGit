@@ -11,6 +11,7 @@ using namespace QGit;
 /**
  * Initialize a repository widget.
  * @param debug
+ * @param path
  * @param parent
  */
 Repository::Repository(bool debug, const QString &path, QWidget *parent)
@@ -21,7 +22,7 @@ Repository::Repository(bool debug, const QString &path, QWidget *parent)
     QFile headFile = QFile(root + "/refs/heads/" + head);
     try {
       headFile.open(QFile::ReadOnly);
-      QString hash = QString(headFile.readAll());
+      QString hash = QString(headFile.read(40));
       headFile.close();
       heads[head] = hash;
       if (debug) {
