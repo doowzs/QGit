@@ -7,6 +7,7 @@
 
 #include "root.h"
 #include "welcome.h"
+#include "repository.h"
 using namespace QGit;
 
 /**
@@ -32,7 +33,8 @@ void Root::openRepository(const QString &path) {
     qDebug() << "path:" << path;
   }
   if (QDir(path + "/.git").exists()) {
-    // TODO: open the repository.
+    repositoryWidget = new Repository(debug, path, this);
+    this->setCentralWidget(repositoryWidget);
   } else {
     if (debug) {
       qDebug() << "error:" << path << "does not contain .git folder";

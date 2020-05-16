@@ -14,6 +14,7 @@
 
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(Welcome)
+QT_FORWARD_DECLARE_CLASS(Repository)
 
 class Root final : public QMainWindow {
  Q_OBJECT
@@ -23,6 +24,7 @@ class Root final : public QMainWindow {
 
  private: // Widgets
   Welcome *welcomeWidget{};
+  Repository *repositoryWidget{};
 
  public: // Constructors
   Root(bool debug, const QString &path, QWidget *parent);
