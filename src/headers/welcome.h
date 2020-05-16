@@ -31,15 +31,15 @@ class Welcome final : public QWidget {
   QLabel *versionLabel{};
   QLabel *authorLabel{};
 
- Q_SIGNALS: // Signals
-  void repositoryOpened(const QString &path);
-
- private Q_SLOTS: // Slots
-  void openRepository();
-  void closeApplication();
-
  public: // Constructors
   Welcome(bool debug, QWidget *parent);
+
+ Q_SIGNALS: // Signals
+  void repositorySelected(const QString &path);
+
+ private Q_SLOTS: // Slots
+  void selectRepository();
+  void closeApplication();
 };
 }
 

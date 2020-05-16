@@ -20,13 +20,17 @@ class Root final : public QMainWindow {
 
  private: // Members
   const bool debug;
-  QString path;
 
  private: // Widgets
   Welcome *welcomeWidget{};
 
  public: // Constructors
-  Root(bool debug, QString path, QWidget *parent);
+  Root(bool debug, const QString &path, QWidget *parent);
+
+ Q_SIGNALS: // Signals
+
+ private Q_SLOTS: // Slots
+  void openRepository(const QString &path);
 };
 }// namespace QGit
 

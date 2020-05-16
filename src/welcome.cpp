@@ -23,12 +23,12 @@ Welcome::Welcome(bool debug, QWidget *parent) : QWidget(parent), debug(debug) {
 
   openButton = new QPushButton(this);
   openButton->setText("打开仓库");
-  connect(openButton, SIGNAL(released()), this, SLOT(openRepository()));
+  connect(openButton, &QPushButton::released, this, &Welcome::selectRepository);
   welcomeLayout->addWidget(openButton);
 
   exitButton = new QPushButton(this);
   exitButton->setText("退出程序");
-  connect(exitButton, SIGNAL(released()), this, SLOT(closeApplication()));
+  connect(exitButton, &QPushButton::released, this, &Welcome::closeApplication);
   welcomeLayout->addWidget(exitButton);
 
   versionLabel = new QLabel(this);
@@ -46,19 +46,11 @@ Welcome::Welcome(bool debug, QWidget *parent) : QWidget(parent), debug(debug) {
 }
 
 /**
- * Slot: when open button is clicked, use a dialog to let user choose a repository.
- * After choosing a repository, check its data and emit signal for root to handle.
+ * Slot: when open button is clicked, use a dialog to let user select a repository.
+ * After choosing a repository, emit signal for root to handle the selected path.
  */
-void Welcome::openRepository() {
-  QString path = QFileDialog::getExistingDirectory(this, "选择仓库目录");
-  if (debug) {
-    qDebug() << "open directory" << path;
-  }
-  if (QDir(path + "/.git").exists()) {
-    emit repositoryOpened(path);
-  } else {
-    QMessageBox::about(this, "错误", "打开的目录不是Git仓库");
-  }
+void Welcome::selectRepository() {
+  emit repositorySelected(QFileDialog::getExistingDirectory(this, "选择仓库目录"));
 }
 
 /**
