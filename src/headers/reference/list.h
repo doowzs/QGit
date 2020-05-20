@@ -23,6 +23,7 @@ class List final : public QWidget {
 
  private: // Members
   const bool debug;
+  const QString path; // path to .git/heads
 
  private: // Widgets
   QVBoxLayout *listLayout{};
@@ -32,6 +33,12 @@ class List final : public QWidget {
 
  public: // Constructors
   List(bool debug, const QString &path, QWidget *parent);
+
+ private: // Methods
+  void updateReferenceItems();
+  void searchHeads();
+  void searchRemotes();
+  void searchTags();
 };
 }
 
