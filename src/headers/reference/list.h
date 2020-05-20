@@ -12,6 +12,8 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QListWidgetItem>
 
 namespace QGit::Reference {
 QT_FORWARD_DECLARE_CLASS(Item)
@@ -25,7 +27,8 @@ class List final : public QWidget {
  private: // Widgets
   QVBoxLayout *listLayout{};
   QLabel *titleLabel{};
-  QVector<Item *> itemWidgets;
+  QListWidget *listWidget{};
+  QVector<Item *> items;
 
  public: // Constructors
   List(bool debug, const QString &path, QWidget *parent);

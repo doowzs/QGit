@@ -10,19 +10,18 @@
 
 #include <QtCore>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QPushButton>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QListWidgetItem>
 
 namespace QGit::Reference {
-class Item final : public QPushButton {
-  Q_OBJECT
-
+class Item final : public QListWidgetItem {
  private: // Members
   const bool debug;
   QString name;
   QString hash;
 
  public: // Constructors
-  Item(bool debug, const QString &name, const QString &path, QWidget *parent);
+  Item(bool debug, const QString &name, const QString &path, QListWidget *parent);
 };
 }
 

@@ -15,8 +15,8 @@ using namespace QGit::Reference;
  * @param path
  * @param parent
  */
-Item::Item(bool debug, const QString &name, const QString &path, QWidget *parent)
-    : QPushButton(parent), debug(debug), name(name) {
+Item::Item(bool debug, const QString &name, const QString &path, QListWidget *list)
+    : QListWidgetItem(list), debug(debug), name(name) {
   QFile headFile = QFile(path);
   headFile.open(QFile::ReadOnly);
   hash = QString(headFile.read(40));
