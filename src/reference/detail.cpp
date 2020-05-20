@@ -6,4 +6,6 @@
  */
 
 #include "reference/detail.h"
+using namespace QGit::Reference;
 
+Detail::Detail(bool debug, const QString &hash, QWidget *parent) : QWidget(parent), debug(debug), hash(hash) {}

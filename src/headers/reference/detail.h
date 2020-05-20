@@ -11,9 +11,16 @@
 #include <QtCore>
 #include <QtWidgets/QWidget>
 
-namespace Qt::Reference {
+namespace QGit::Reference {
 class Detail final : public QWidget {
   Q_OBJECT
+
+ private: // Members
+  const bool debug;
+  const QString hash;
+
+ public: // Constructors
+  Detail(bool debug, const QString &hash, QWidget *parent);
 };
 }
 

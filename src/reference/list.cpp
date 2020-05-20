@@ -24,6 +24,10 @@ List::List(bool debug, const QString &path, QWidget *parent) : QWidget(parent), 
   listLayout->addWidget(titleLabel);
 
   listWidget = new QListWidget(this);
+  connect(listWidget, &QListWidget::itemSelectionChanged, this, [&]() -> void {
+    auto item = dynamic_cast<Item *>(listWidget->selectedItems()[0]);
+    emit referenceSelected(item->getName(), item->getHash());
+  });
   updateReferenceItems();
   listLayout->addWidget(listWidget);
 
@@ -65,7 +69,6 @@ void List::searchHeads() {
   }
 }
 
-
 /**
  * Search references in .git/refs/remotes folder.
  */
@@ -89,7 +92,6 @@ void List::searchRemotes() {
     }
   }
 }
-
 
 /**
  * Search references in .git/refs/tags folder.

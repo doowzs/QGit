@@ -14,7 +14,25 @@ Panel::Panel(bool debug, const QString &path, QWidget *parent) : QWidget(parent)
   panelLayout = new QHBoxLayout(this);
 
   listWidget = new List(debug, path + "/.git/refs", this);
+  connect(listWidget, &List::referenceSelected, this, &Panel::referenceSelected);
   panelLayout->addWidget(listWidget);
 
   this->setLayout(panelLayout);
+}
+
+/**
+ * Generate a detail widget when a git reference is selected.
+ * @param hash
+ */
+void Panel::referenceSelected(const QString &name, const QString &hash) {
+  if (detailWidget != nullptr) {
+    panelLayout->removeWidget(detailWidget);
+    detailWidget->deleteLater();
+  }
+  if (debug) {
+    qDebug() << "selected ref:" << name;
+    qDebug() << "ref's hash:" << hash;
+  }
+  detailWidget = new Detail(debug, hash, this);
+  panelLayout->addWidget(detailWidget);
 }

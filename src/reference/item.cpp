@@ -24,3 +24,19 @@ Item::Item(bool debug, const QString &name, const QString &path, QListWidget *li
 
   this->setText(name);
 }
+
+/**
+ * Get name of the reference item.
+ * @return QString name
+ */
+QString Item::getName() {
+  return name;
+}
+
+/**
+ * Get hash of the reference item.
+ * @return QString hash
+ */
+QString Item::getHash() {
+  return hash;
+}

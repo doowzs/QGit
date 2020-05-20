@@ -30,6 +30,9 @@ class Panel final : public QWidget {
 
  public: // Constructors
   Panel(bool debug, const QString &path, QWidget *parent);
+
+ private Q_SLOTS: // Slots
+  void referenceSelected(const QString &name, const QString &hash);
 };
 }
 
