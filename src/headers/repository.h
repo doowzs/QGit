@@ -14,7 +14,7 @@
 
 namespace QGit {
 namespace Reference {
-QT_FORWARD_DECLARE_CLASS(List)
+QT_FORWARD_DECLARE_CLASS(Panel)
 }
 
 class Repository final : public QWidget {
@@ -26,7 +26,7 @@ class Repository final : public QWidget {
 
  private: // Widgets
   QHBoxLayout *repositoryLayout{};
-  Reference::List *referenceListWidget{};
+  Reference::Panel *referencePanel{};
 
  public: // Constructors
   Repository(bool debug, const QString &path, QWidget *parent);

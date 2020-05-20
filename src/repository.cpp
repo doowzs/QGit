@@ -6,7 +6,7 @@
  */
 
 #include "repository.h"
-#include "reference/list.h"
+#include "reference/panel.h"
 using namespace QGit;
 
 /**
@@ -16,11 +16,11 @@ using namespace QGit;
  * @param parent
  */
 Repository::Repository(bool debug, const QString &path, QWidget *parent)
-    : QWidget(parent), debug(debug), root(path + "/.git") {
+    : QWidget(parent), debug(debug), root(path) {
   repositoryLayout = new QHBoxLayout(this);
 
-  referenceListWidget = new Reference::List(debug, root + "/refs/heads", this);
-  repositoryLayout->addWidget(referenceListWidget);
+  referencePanel = new Reference::Panel(debug, path, this);
+  repositoryLayout->addWidget(referencePanel);
 
   this->setLayout(repositoryLayout);
 }
