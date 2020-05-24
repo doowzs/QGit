@@ -38,5 +38,6 @@ List::List(bool debug, const QString &path, const QString &hash, QWidget *parent
   listLayout->addWidget(listWidget);
 
   this->setLayout(listLayout);
-  this->setFixedWidth(400);
+  this->setMinimumWidth(400);
+  this->setFixedHeight(600);
 }

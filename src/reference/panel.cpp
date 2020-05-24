@@ -17,6 +17,9 @@ Panel::Panel(bool debug, const QString &path, QWidget *parent) : QWidget(parent)
   connect(listWidget, &List::referenceSelected, this, &Panel::referenceSelected);
   panelLayout->addWidget(listWidget);
 
+  detailWidget = new Detail(debug, path, QString(), this);
+  panelLayout->addWidget(detailWidget);
+
   this->setLayout(panelLayout);
 }
 
