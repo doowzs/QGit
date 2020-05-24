@@ -21,6 +21,7 @@ List::List(bool debug, const QString &path, const QString &hash, QWidget *parent
   listLayout = new QVBoxLayout(this);
 
   titleLabel = new QLabel(this);
+  titleLabel->setFont(QFont(nullptr, 25));
   titleLabel->setText("Commits");
   listLayout->addWidget(titleLabel);
 
@@ -31,4 +32,5 @@ List::List(bool debug, const QString &path, const QString &hash, QWidget *parent
   listLayout->addWidget(listWidget);
 
   this->setLayout(listLayout);
+  this->setFixedWidth(400);
 }
