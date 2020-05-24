@@ -17,9 +17,14 @@ class Item final : public QListWidgetItem {
   const bool debug;
   QString hash;
   QString parent;
+  QString commit;
+  QString author;
+  QString committer;
+  QString title;
+  QString message;
 
  public: // Constructors
-  Item(bool debug, const QString &path, const QString &hash, QListWidget *parent);
+  Item(bool debug, const QString &path, const QString &hash, QListWidget *list);
 };
 }
 

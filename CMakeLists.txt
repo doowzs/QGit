@@ -18,7 +18,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIRS})
 
 qt5_wrap_cpp(CMAKE_CXX_SOURCES ${CMAKE_CXX_HEADERS})
 add_executable(qgit ${CMAKE_CXX_SOURCES})
-target_link_libraries(qgit Qt5::Core Qt5::Widgets)
+target_link_libraries(qgit Qt5::Core Qt5::Widgets ${ZLIB_LIBRARIES})
