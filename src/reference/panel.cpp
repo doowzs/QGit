@@ -33,6 +33,6 @@ void Panel::referenceSelected(const QString &name, const QString &hash) {
     qDebug() << "selected ref:" << name;
     qDebug() << "ref's hash:" << hash;
   }
-  detailWidget = new Detail(debug, hash, this);
+  detailWidget = new Detail(debug, path, hash, this);
   panelLayout->addWidget(detailWidget);
 }
