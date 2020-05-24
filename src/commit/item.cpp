@@ -25,20 +25,21 @@ Item::Item(bool debug, const QString &path, const QString &hash, QListWidget *li
   commitFile.close();
 
   // inflate commit data with zlib
-  bool inflated = false;
   uLong uncompressedLength = 4096;
   QByteArray uncompressedData = QByteArray(uncompressedLength, '\0');
-  while (not inflated) {
+  while (true) {
     int result = uncompress((Bytef *) uncompressedData.data(),
                             &uncompressedLength,
                             (const Bytef *) compressedData.constData(),
                             (uLong) compressedData.length() + 1);
     if (result == Z_OK) {
-      inflated = true;
+      break; // uncompress OK
     } else if (result == Z_BUF_ERROR) {
+      // buffer is not large enough
       uncompressedLength *= 2;
       uncompressedData = QByteArray(uncompressedLength, '\0');
     } else {
+      // fatal error occurred, abort the program
       qDebug() << "uncompress failed with code" << result;
       exit(-1);
     }
@@ -46,16 +47,25 @@ Item::Item(bool debug, const QString &path, const QString &hash, QListWidget *li
   QTextStream stream = QTextStream(uncompressedData, QIODevice::ReadOnly);
 
   // read header of the commit
-  stream.readLine(); // COMMIT SIZE \0
-  parent = stream.readLine().mid(7);
-  author = stream.readLine().mid(7);
-  committer = stream.readLine().mid(10);
-
-  // skip gpg signature of the commit
-  if (stream.readLine().mid(0, 6) == QString("gpgsig")) {
-    while (!stream.atEnd() and stream.readLine() != QString(" -----END PGP SIGNATURE-----")) continue;
+  QString buffer;
+  stream.readLine(); // skip first line: COMMIT SIZE \0
+  while (true) {
+    buffer = stream.readLine();
+    if (buffer.isEmpty()) {
+      break; // stop reading when an empty line is met
+    } else {
+      QString type = buffer.mid(0, 3);
+      if (type == "par" /* parent */) {
+        parent = stream.readLine().mid(7);
+      } else if (type == "aut" /* author */) {
+        author = stream.readLine().mid(7);
+      } else if (type == "com" /* committer */) {
+        committer = stream.readLine().mid(10);
+      } else if (type == "gpg" /* gpgsig */) {
+        while (!stream.atEnd() and stream.readLine() != QString(" -----END PGP SIGNATURE-----")) continue;
+      }
+    }
   }
-  stream.readLine(); // skip the blank line
 
   // read title and message of the commit
   title = stream.readLine();
