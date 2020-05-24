@@ -26,9 +26,15 @@ List::List(bool debug, const QString &path, const QString &hash, QWidget *parent
   listLayout->addWidget(titleLabel);
 
   listWidget = new QListWidget(this);
-  Item *item = new Item(debug, path, hash, listWidget);
-  items.push_back(item);
-  listWidget->addItem(item);
+  {
+    QString cur = hash;
+    while (!cur.isEmpty()) {
+      Item *item = new Item(debug, path, cur, listWidget);
+      items.push_back(item);
+      listWidget->addItem(item);
+      cur = item->getParent();
+    }
+  }
   listLayout->addWidget(listWidget);
 
   this->setLayout(listLayout);

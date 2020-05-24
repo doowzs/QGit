@@ -56,13 +56,15 @@ Item::Item(bool debug, const QString &path, const QString &hash, QListWidget *li
     } else {
       QString type = buffer.mid(0, 3);
       if (type == "par" /* parent */) {
-        parent = stream.readLine().mid(7);
+        parent = buffer.mid(7);
       } else if (type == "aut" /* author */) {
-        author = stream.readLine().mid(7);
+        author = buffer.mid(7);
       } else if (type == "com" /* committer */) {
-        committer = stream.readLine().mid(10);
-      } else if (type == "gpg" /* gpgsig */) {
-        while (!stream.atEnd() and stream.readLine() != QString(" -----END PGP SIGNATURE-----")) continue;
+        committer = buffer.mid(10);
+      } else if (type == "gpg" /* gpg signature */) {
+        while (!stream.atEnd() and buffer != QString(" -----END PGP SIGNATURE-----")) {
+          buffer = stream.readLine();
+        }
       }
     }
   }
@@ -73,3 +75,9 @@ Item::Item(bool debug, const QString &path, const QString &hash, QListWidget *li
 
   this->setText(hash.mid(0, 8) + " " + title);
 }
+
+/**
+ * Get the hash of parent commit.
+ * @return parent
+ */
+QString Item::getParent() const { return parent; }

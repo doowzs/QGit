@@ -25,6 +25,9 @@ class Item final : public QListWidgetItem {
 
  public: // Constructors
   Item(bool debug, const QString &path, const QString &hash, QListWidget *list);
+
+ public: // Interfaces
+  QString getParent() const;
 };
 }
 
