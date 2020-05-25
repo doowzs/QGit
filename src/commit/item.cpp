@@ -25,7 +25,7 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
   QString buffer;
   stream.readLine(); // skip first line: COMMIT SIZE \0
   while (true) {
-    buffer = stream.readLine().trimmed();
+    buffer = stream.readLine();
     if (buffer.isEmpty()) {
       break; // stop reading when an empty line is met
     } else {
@@ -47,8 +47,8 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
   }
 
   // read title and message of the commit
-  title = stream.readLine().trimmed();
-  message = stream.atEnd() ? "" : stream.readAll().trimmed();
+  title = stream.readLine();
+  message = stream.atEnd() ? "" : stream.readAll();
 
   this->setText(hash.mid(0, 8) + " " + title);
 }

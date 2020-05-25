@@ -22,7 +22,7 @@ class List final : public QWidget {
   const bool debug;
 
  public:// Constructors
-  List(bool debug, const QString &hash, FS *fs, QWidget *parent);
+  List(bool debug, const QString &root, FS *fs, QWidget *parent);
 };
 }// namespace Tree
 }// namespace QGit

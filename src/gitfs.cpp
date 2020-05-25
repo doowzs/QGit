@@ -19,36 +19,6 @@ FS::FS(bool debug, const QString &path) : debug(debug),
                                           path(path) {}
 
 /**
- * Convert a 20-byte array into a QString hash.
- * @param bytes
- * @return
- */
-QString FS::convertBytesToHash(const QByteArray &bytes) {
-  QString hash = QString();
-  for (int i = 0; i < 20; ++i) {
-    uint32_t byte = bytes[i];
-    uint32_t hi = (byte & 0xf0U) >> 4U;
-    uint32_t lo = byte & 0x0fU;
-    hash += (QChar)((hi > 0x9 ? 'a' - 0xa : '0') + hi);
-    hash += (QChar)((lo > 0x9 ? 'a' - 0xa : '0') + lo);
-  }
-  return hash;
-}
-
-/**
- * Convert a N-byte array into a length integer.
- * @param bytes
- * @return unsigned int of length
- */
-uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
-  auto length = (uint32_t) bytes[0] & 0x0fU;
-  for (int i = 1; i < bytes.length(); ++i) {
-    length |= ((uint32_t) bytes[i] & 0x7fU) << (7U * i - 3U);
-  }
-  return compressBound(length);// bytes in file is size before compress
-}
-
-/**
  * Read object data from an object file.
  * @param hash
  * @return object data | []
@@ -141,6 +111,36 @@ QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) 
 }
 
 /**
+ * Convert a 20-byte array into a QString hash.
+ * @param bytes
+ * @return
+ */
+QString FS::convertBytesToHash(const QByteArray &bytes) {
+  QString hash = QString();
+  for (int i = 0; i < 20; ++i) {
+    uint32_t byte = bytes[i];
+    uint32_t hi = (byte & 0xf0U) >> 4U;
+    uint32_t lo = byte & 0x0fU;
+    hash += (QChar)((hi > 0x9 ? 'a' - 0xa : '0') + hi);
+    hash += (QChar)((lo > 0x9 ? 'a' - 0xa : '0') + lo);
+  }
+  return hash;
+}
+
+/**
+ * Convert a N-byte array into a length integer.
+ * @param bytes
+ * @return unsigned int of length
+ */
+uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
+  auto length = (uint32_t) bytes[0] & 0x0fU;
+  for (int i = 1; i < bytes.length(); ++i) {
+    length |= ((uint32_t) bytes[i] & 0x7fU) << (7U * i - 3U);
+  }
+  return compressBound(length);// bytes in file is size before compress
+}
+
+/**
  * Read object data from .git/objects folder.
  * @param hash
  * @return object data | []
@@ -201,7 +201,8 @@ QTextStream FS::getDecompressedStream(const QString &hash) {
   QByteArray data = getDecompressedObject(hash);
   for (int pos = 0; pos < data.length(); ++pos) {
     if (data.data()[pos] == '\0') {
-      data.data()[pos] = '\n';// replace '\0' with '\n'
+      data.data()[pos] = '\n';// replace the first '\0' with '\n'
+      break;
     }
   }
   return QTextStream(data, QIODevice::ReadOnly);
