@@ -19,8 +19,8 @@ class Item final : public QListWidgetItem {
  private:// Members
   const bool debug;
   QString hash;
+  QString tree;
   QStringList parents;
-  QString commit;
   QString author;
   QString committer;
   QString title;
@@ -30,7 +30,12 @@ class Item final : public QListWidgetItem {
   Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWidget *list);
 
  public:// Interfaces
-  QStringList getParents() const;
+  [[nodiscard]] QString getHash() const;
+  [[nodiscard]] QString getTree() const;
+  [[nodiscard]] QStringList getParents() const;
+  [[nodiscard]] QString getAuthor() const;
+  [[nodiscard]] QString getTitle() const;
+  [[nodiscard]] QString getMessage() const;
 };
 }// namespace Commit
 }// namespace QGit

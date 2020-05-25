@@ -18,6 +18,7 @@ QT_FORWARD_DECLARE_CLASS(FS)
 
 namespace Commit {
 QT_FORWARD_DECLARE_CLASS(List)
+QT_FORWARD_DECLARE_CLASS(Detail)
 
 class Panel final : public QWidget {
   Q_OBJECT
@@ -31,9 +32,14 @@ class Panel final : public QWidget {
  private:// Widgets
   QHBoxLayout *panelLayout{};
   List *listWidget{};
+  Detail *detailWindow{};
 
  public:// Constructors
   Panel(bool debug, const QString &path, const QString &hash, QWidget *parent);
+
+ private Q_SLOTS:// Slots
+  void commitSelected(const QString &_hash, const QString &tree, const QStringList &parents,
+                      const QString &author, const QString &title, const QString &message);
 };
 }// namespace Commit
 }// namespace QGit

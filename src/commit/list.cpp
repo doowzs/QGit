@@ -33,6 +33,11 @@ List::List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget
   listLayout->addWidget(titleLabel);
 
   listWidget = new QListWidget(this);
+  connect(listWidget, &QListWidget::itemSelectionChanged, this, [&]() -> void {
+    auto item = dynamic_cast<Item *>(listWidget->selectedItems()[0]);
+    emit commitSelected(item->getHash(), item->getTree(), item->getParents(),
+                        item->getAuthor(), item->getTree(), item->getMessage());
+  });
   QStringList hashList = QStringList(hash);
   while (!hashList.isEmpty()) {
     QString cur = hashList.takeFirst();

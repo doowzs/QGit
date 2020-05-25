@@ -57,7 +57,9 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
       break; // stop reading when an empty line is met
     } else {
       QString type = buffer.mid(0, 3);
-      if (type == "par" /* parent */) {
+      if (type == "tre" /* tree */) {
+        tree = buffer.mid(5);
+      } else if (type == "par" /* parent */) {
         parents.append(buffer.mid(7));
       } else if (type == "aut" /* author */) {
         author = buffer.mid(7);
@@ -79,7 +81,37 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
 }
 
 /**
+ * Get the hash of the commit.
+ * @return hash
+ */
+QString Item::getHash() const { return hash; }
+
+/**
+ * Get the hash of tree of the commit.
+ * @return tree
+ */
+QString Item::getTree() const { return tree; }
+
+/**
  * Get the hash of parent commits.
  * @return parent
  */
 QStringList Item::getParents() const { return parents; }
+
+/**
+ * Get the author of the commit.
+ * @return author
+ */
+QString Item::getAuthor() const { return author; }
+
+/**
+ * Get the title of the commit.
+ * @return title
+ */
+QString Item::getTitle() const { return title; }
+
+/**
+ * Get the message of the commit.
+ * @return message
+ */
+QString Item::getMessage() const { return message; }

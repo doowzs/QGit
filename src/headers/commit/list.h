@@ -37,6 +37,10 @@ class List final : public QWidget {
 
  public:// Constructors
   List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget *parent);
+
+ Q_SIGNALS:// Signals
+  void commitSelected(const QString &hash, const QString &tree, const QStringList &parents,
+                      const QString &author, const QString &title, const QString &message);
 };
 }// namespace Commit
 }// namespace QGit
