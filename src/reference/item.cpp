@@ -15,6 +15,21 @@ using namespace QGit::Reference;
  * @param path
  * @param parent
  */
+Item::Item(bool debug, const QString &packed, QListWidget *parent) : QListWidgetItem(parent), debug(debug) {
+  QStringList list = packed.split(" ");
+  hash = list.takeFirst().trimmed();
+  name = "*" + list.takeFirst().trimmed();
+
+  this->setText(name);
+}
+
+/**
+ * Initialize a button of a git reference.
+ * May throw error when reading the ref file.
+ * @param debug
+ * @param path
+ * @param parent
+ */
 Item::Item(bool debug, const QString &name, const QString &path, QListWidget *list)
     : QListWidgetItem(list), debug(debug), name(name) {
   QFile headFile = QFile(path);

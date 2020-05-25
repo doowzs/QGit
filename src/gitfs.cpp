@@ -79,9 +79,6 @@ QByteArray FS::readFromPackFile(const QString &hash) {
   QStringList packFileList = folder.entryList(QStringList("*.pack"), QDir::Files | QDir::NoDotAndDotDot);
   QByteArray data = QByteArray();
   for (const QString &packFile : packFileList) {
-    if (debug) {
-      qDebug() << "search object in" << packFile;
-    }
     data = readFromSinglePackFile(packFile.mid(0, packFile.length() - 5), hash);
     if (!data.isEmpty()) {
       break;
@@ -153,10 +150,10 @@ QByteArray FS::getObject(const QString &hash) {
   // we need to try both cases in order to get object data.
   QByteArray data = readFromObject(hash);
   if (data.isEmpty()) {
-    if (debug) {
-      qDebug() << "no object file for" << hash;
-    }
     data = readFromPackFile(hash);
+  }
+  if (data.isEmpty()) {
+    qDebug() << "object" << hash << "not found";
   }
   return data;
 }

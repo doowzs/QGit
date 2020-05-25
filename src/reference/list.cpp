@@ -49,6 +49,27 @@ void List::updateReferenceItems() {
   searchHeads();
   searchRemotes();
   searchTags();
+  searchPackedRefs();
+}
+
+void List::searchPackedRefs() {
+  QFile file = QFile(path + "/../packed-refs");
+  if (!file.exists()) {
+    return;
+  }
+
+  try {
+    file.open(QFile::ReadOnly);
+    file.readLine(); // skip the first line
+    while (!file.atEnd()) {
+      QString line = QString(file.readLine());
+      Item *item = new Item(debug, line, listWidget);
+      items.push_back(item);
+      listWidget->addItem(item);
+    }
+  } catch (const QException &e) {
+    qDebug() << "error:" << e.what();
+  }
 }
 
 /**
@@ -59,9 +80,6 @@ void List::searchHeads() {
   QStringList headsList = headsFolder.entryList(QDir::Files | QDir::NoDotAndDotDot);
   for (const QString &head : headsList) {
     try {
-      if (debug) {
-        qDebug() << "ref:" << head;
-      }
       Item *item = new Item(debug, head, path + "/heads/" + head, listWidget);
       items.push_back(item);
       listWidget->addItem(item);
@@ -82,9 +100,6 @@ void List::searchRemotes() {
     QStringList headsList = headsFolder.entryList(QDir::Files | QDir::NoDotAndDotDot);
     for (const QString &head : headsList) {
       try {
-        if (debug) {
-          qDebug() << "ref:" << remote + "/" + head;
-        }
         Item *item = new Item(debug, remote + "/" + head, path + "/remotes/" + remote + "/" + head, listWidget);
         items.push_back(item);
         listWidget->addItem(item);
@@ -103,9 +118,6 @@ void List::searchTags() {
   QStringList headsList = headsFolder.entryList(QDir::Files | QDir::NoDotAndDotDot);
   for (const QString &head : headsList) {
     try {
-      if (debug) {
-        qDebug() << "ref:" << head;
-      }
       Item *item = new Item(debug, "tags/" + head, path + "/tags/" + head, listWidget);
       items.push_back(item);
       listWidget->addItem(item);

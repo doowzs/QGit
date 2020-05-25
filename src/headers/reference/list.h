@@ -39,6 +39,7 @@ class List final : public QWidget {
   void searchHeads();
   void searchRemotes();
   void searchTags();
+  void searchPackedRefs();
 
  Q_SIGNALS: // Signals
   void referenceSelected(const QString &name, const QString &hash);
