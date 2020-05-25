@@ -7,6 +7,8 @@
 
 #include "commit/list.h"
 #include "commit/item.h"
+#include "gitfs.h"
+using namespace QGit;
 using namespace QGit::Commit;
 
 /**
@@ -16,8 +18,8 @@ using namespace QGit::Commit;
  * @param hash
  * @param parent
  */
-List::List(bool debug, const QString &path, const QString &hash, QWidget *parent)
-    : QWidget(parent), debug(debug), path(path), hash(hash) {
+List::List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget *parent)
+    : QWidget(parent), debug(debug), path(path), hash(hash), fs(fs) {
   listLayout = new QVBoxLayout(this);
 
   titleLabel = new QLabel(this);
@@ -29,7 +31,7 @@ List::List(bool debug, const QString &path, const QString &hash, QWidget *parent
   {
     QString cur = hash;
     while (!cur.isEmpty()) {
-      Item *item = new Item(debug, path, cur, listWidget);
+      Item *item = new Item(debug, path, cur, fs, listWidget);
       items.push_back(item);
       listWidget->addItem(item);
       cur = item->getParent();

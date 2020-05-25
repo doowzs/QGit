@@ -9,31 +9,36 @@
 #define QGIT_SRC_HEADERS_COMMIT_LIST_H_
 
 #include <QtCore>
-#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QLabel>
+#include <QtWidgets/QWidget>
 
-namespace QGit::Commit {
+namespace QGit {
+QT_FORWARD_DECLARE_CLASS(FS)
+
+namespace Commit {
 QT_FORWARD_DECLARE_CLASS(Item)
 
 class List final : public QWidget {
   Q_OBJECT
 
- private: // Members
+ private:// Members
   const bool debug;
   const QString path;
   const QString hash;
   QVector<Item *> items;
+  FS *fs{};
 
- private: // Widgets
+ private:// Widgets
   QVBoxLayout *listLayout{};
   QLabel *titleLabel{};
   QListWidget *listWidget{};
 
- public: // Constructors
-  List(bool debug, const QString &path, const QString &hash, QWidget *parent);
+ public:// Constructors
+  List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget *parent);
 };
-}
+}// namespace Commit
+}// namespace QGit
 
-#endif //QGIT_SRC_HEADERS_COMMIT_LIST_H_
+#endif//QGIT_SRC_HEADERS_COMMIT_LIST_H_

@@ -11,9 +11,12 @@
 #include <QtCore>
 #include <QtWidgets/QListWidgetItem>
 
-namespace QGit::Commit {
+namespace QGit {
+QT_FORWARD_DECLARE_CLASS(FS)
+
+namespace Commit {
 class Item final : public QListWidgetItem {
- private: // Members
+ private:// Members
   const bool debug;
   QString hash;
   QString parent;
@@ -23,12 +26,13 @@ class Item final : public QListWidgetItem {
   QString title;
   QString message;
 
- public: // Constructors
-  Item(bool debug, const QString &path, const QString &hash, QListWidget *list);
+ public:// Constructors
+  Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWidget *list);
 
- public: // Interfaces
+ public:// Interfaces
   QString getParent() const;
 };
-}
+}// namespace Commit
+}// namespace QGit
 
-#endif //QGIT_SRC_HEADERS_COMMIT_ITEM_H_
+#endif//QGIT_SRC_HEADERS_COMMIT_ITEM_H_

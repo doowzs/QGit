@@ -8,6 +8,8 @@
 #include <zlib.h>
 
 #include "commit/item.h"
+#include "gitfs.h"
+using namespace QGit;
 using namespace QGit::Commit;
 
 /**
@@ -17,12 +19,12 @@ using namespace QGit::Commit;
  * @param hash
  * @param parent
  */
-Item::Item(bool debug, const QString &path, const QString &hash, QListWidget *list)
+Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWidget *list)
     : QListWidgetItem(list), debug(debug), hash(hash) {
-  QFile commitFile = QFile(path + "/" + hash.mid(0, 2) + "/" + hash.mid(2));
-  commitFile.open(QFile::ReadOnly);
-  QByteArray compressedData = commitFile.readAll();
-  commitFile.close();
+  QByteArray compressedData = fs->getObject(hash);
+  if (compressedData.isEmpty()) {
+    return; // FIXME: throw an error?
+  }
 
   // inflate commit data with zlib
   uLong uncompressedLength = 4096;

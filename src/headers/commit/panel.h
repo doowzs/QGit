@@ -9,28 +9,33 @@
 #define QGIT_SRC_HEADERS_COMMIT_PANEL_H_
 
 #include <QtCore>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
 
-namespace QGit::Commit {
+namespace QGit {
+QT_FORWARD_DECLARE_CLASS(FS)
+
+namespace Commit {
 QT_FORWARD_DECLARE_CLASS(List)
 
 class Panel final : public QWidget {
   Q_OBJECT
 
- private: // Members
+ private:// Members
   const bool debug;
   const QString path;
   const QString hash;
+  FS *fs{};
 
- private: // Widgets
+ private:// Widgets
   QHBoxLayout *panelLayout{};
   List *listWidget{};
 
- public: // Constructors
+ public:// Constructors
   Panel(bool debug, const QString &path, const QString &hash, QWidget *parent);
 };
-}
+}// namespace Commit
+}// namespace QGit
 
-#endif //QGIT_SRC_HEADERS_COMMIT_PANEL_H_
+#endif//QGIT_SRC_HEADERS_COMMIT_PANEL_H_
