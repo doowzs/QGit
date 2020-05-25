@@ -29,6 +29,9 @@ class Detail final : public QWidget {
  private:// Widgets
   QVBoxLayout *detailLayout{};
   QLabel *hashLabel{};
+  QLabel *titleLabel{};
+  QLabel *messageLabel{};
+  QLabel *authorLabel{};
 
  public:// Constructors
   Detail(bool debug, const QString &hash, const QString &tree, const QStringList &parents,

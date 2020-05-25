@@ -24,6 +24,18 @@ Detail::Detail(bool debug, const QString &hash, const QString &tree, const QStri
   hashLabel->setText(hash);
   detailLayout->addWidget(hashLabel);
 
+  titleLabel = new QLabel(this);
+  titleLabel->setText(title);
+  detailLayout->addWidget(titleLabel);
+
+  messageLabel = new QLabel(this);
+  messageLabel->setText(message);
+  detailLayout->addWidget(messageLabel);
+
+  authorLabel = new QLabel(this);
+  authorLabel->setText(author);
+  detailLayout->addWidget(authorLabel);
+
   this->setWindowTitle("提交详情");
   this->setLayout(detailLayout);
 }

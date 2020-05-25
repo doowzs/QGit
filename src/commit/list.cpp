@@ -36,7 +36,7 @@ List::List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget
   connect(listWidget, &QListWidget::itemSelectionChanged, this, [&]() -> void {
     auto item = dynamic_cast<Item *>(listWidget->selectedItems()[0]);
     emit commitSelected(item->getHash(), item->getTree(), item->getParents(),
-                        item->getAuthor(), item->getTree(), item->getMessage());
+                        item->getAuthor(), item->getTitle(), item->getMessage());
   });
   QStringList hashList = QStringList(hash);
   while (!hashList.isEmpty()) {

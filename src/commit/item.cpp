@@ -46,13 +46,19 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
       exit(-1);
     }
   }
+  for (int pos = 0; pos < uncompressedLength; ++pos) {
+    if (uncompressedData.data()[pos] == 0) {
+      uncompressedData.data()[pos] = '\n'; // replace first '\0' with '\n'
+      break;
+    }
+  }
   QTextStream stream = QTextStream(uncompressedData, QIODevice::ReadOnly);
 
   // read header of the commit
   QString buffer;
   stream.readLine(); // skip first line: COMMIT SIZE \0
   while (true) {
-    buffer = stream.readLine();
+    buffer = stream.readLine().trimmed();
     if (buffer.isEmpty()) {
       break; // stop reading when an empty line is met
     } else {
@@ -66,7 +72,7 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
       } else if (type == "com" /* committer */) {
         committer = buffer.mid(10);
       } else if (type == "gpg" /* gpg signature */) {
-        while (!stream.atEnd() and buffer != QString(" -----END PGP SIGNATURE-----")) {
+        while (!stream.atEnd() and !buffer.contains("-----END PGP SIGNATURE-----")) {
           buffer = stream.readLine();
         }
       }
@@ -74,8 +80,8 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
   }
 
   // read title and message of the commit
-  title = stream.readLine();
-  message = stream.readAll();
+  title = stream.readLine().trimmed();
+  message = stream.atEnd() ? "" : stream.readAll().trimmed();
 
   this->setText(hash.mid(0, 8) + " " + title);
 }
