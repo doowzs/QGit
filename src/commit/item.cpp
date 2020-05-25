@@ -5,8 +5,6 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include <zlib.h>
-
 #include "commit/item.h"
 #include "gitfs.h"
 using namespace QGit;
@@ -21,38 +19,7 @@ using namespace QGit::Commit;
  */
 Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWidget *list)
     : QListWidgetItem(list), debug(debug), hash(hash) {
-  QByteArray compressedData = fs->getObject(hash);
-  if (compressedData.isEmpty()) {
-    return; // FIXME: throw an error?
-  }
-
-  // inflate commit data with zlib
-  uLong uncompressedLength = 4096;
-  QByteArray uncompressedData = QByteArray(uncompressedLength, '\0');
-  while (true) {
-    int result = uncompress((Bytef *) uncompressedData.data(),
-                            &uncompressedLength,
-                            (const Bytef *) compressedData.constData(),
-                            (uLong) compressedData.length() + 1);
-    if (result == Z_OK) {
-      break; // uncompress OK
-    } else if (result == Z_BUF_ERROR) {
-      // buffer is not large enough
-      uncompressedLength *= 2;
-      uncompressedData = QByteArray(uncompressedLength, '\0');
-    } else {
-      // fatal error occurred, abort the program
-      qDebug() << "uncompress failed with code" << result;
-      exit(-1);
-    }
-  }
-  for (int pos = 0; pos < uncompressedLength; ++pos) {
-    if (uncompressedData.data()[pos] == 0) {
-      uncompressedData.data()[pos] = '\n'; // replace first '\0' with '\n'
-      break;
-    }
-  }
-  QTextStream stream = QTextStream(uncompressedData, QIODevice::ReadOnly);
+  QTextStream stream = fs->getDecompressedStream(hash);
 
   // read header of the commit
   QString buffer;

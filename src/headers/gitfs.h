@@ -28,6 +28,8 @@ class FS {
 
  public: // Interfaces
   QByteArray getObject(const QString &hash);
+  QByteArray getDecompressedObject(const QString &hash);
+  QTextStream getDecompressedStream(const QString &hash);
 };
 }
 

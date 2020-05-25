@@ -9,11 +9,18 @@
 #define QGIT_SRC_COMMIT_DETAIL_H_
 
 #include <QtCore>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
 
-namespace QGit::Commit {
+namespace QGit {
+QT_FORWARD_DECLARE_CLASS(FS)
+
+namespace Tree {
+QT_FORWARD_DECLARE_CLASS(List)
+}
+
+namespace Commit {
 class Detail final : public QWidget {
   Q_OBJECT
 
@@ -25,6 +32,7 @@ class Detail final : public QWidget {
   const QString author;
   const QString title;
   const QString message;
+  FS *fs;
 
  private:// Widgets
   QVBoxLayout *detailLayout{};
@@ -32,11 +40,13 @@ class Detail final : public QWidget {
   QLabel *titleLabel{};
   QLabel *messageLabel{};
   QLabel *authorLabel{};
+  Tree::List *treeListWidget{};
 
  public:// Constructors
   Detail(bool debug, const QString &hash, const QString &tree, const QStringList &parents,
-         const QString &author, const QString &title, const QString &message, QWidget *parent);
+         const QString &author, const QString &title, const QString &message, FS *fs, QWidget *parent);
 };
-}// namespace QGit::Commit
+}// namespace Commit
+}// namespace QGit
 
 #endif//QGIT_SRC_COMMIT_DETAIL_H_

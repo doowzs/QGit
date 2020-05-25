@@ -157,3 +157,52 @@ QByteArray FS::getObject(const QString &hash) {
   }
   return data;
 }
+
+/**
+ * Get decompressed data from a git object.
+ * @param hash
+ * @return decompressed data | []
+ */
+QByteArray FS::getDecompressedObject(const QString &hash) {
+  QByteArray compressedData = getObject(hash);
+  if (compressedData.isEmpty()) {
+    return QByteArray();
+  }
+
+  // inflate commit data with zlib
+  uLong uncompressedLength = 4096;
+  QByteArray uncompressedData = QByteArray(uncompressedLength, '\0');
+  while (true) {
+    int result = uncompress((Bytef *) uncompressedData.data(),
+                            &uncompressedLength,
+                            (const Bytef *) compressedData.constData(),
+                            (uLong) compressedData.length() + 1);
+    if (result == Z_OK) {
+      break;// uncompress OK
+    } else if (result == Z_BUF_ERROR) {
+      // buffer is not large enough
+      uncompressedLength *= 2;
+      uncompressedData = QByteArray(uncompressedLength, '\0');
+    } else {
+      // fatal error occurred, abort the program
+      qDebug() << "uncompress failed with code" << result;
+      return QByteArray();
+    }
+  }
+  return uncompressedData;
+}
+
+/**
+ * Get a text stream from zlib compressed object.
+ * @param hash
+ * @return text stream
+ */
+QTextStream FS::getDecompressedStream(const QString &hash) {
+  QByteArray data = getDecompressedObject(hash);
+  for (int pos = 0; pos < data.length(); ++pos) {
+    if (data.data()[pos] == '\0') {
+      data.data()[pos] = '\n';// replace '\0' with '\n'
+    }
+  }
+  return QTextStream(data, QIODevice::ReadOnly);
+}

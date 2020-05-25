@@ -48,6 +48,6 @@ void Panel::commitSelected(const QString &_hash, const QString &tree, const QStr
   if (detailWindow != nullptr) {
     detailWindow->deleteLater();
   }
-  detailWindow = new Detail(debug, _hash, tree, parents, author, title, message, this);
+  detailWindow = new Detail(debug, _hash, tree, parents, author, title, message, fs, this);
   detailWindow->show();
 }

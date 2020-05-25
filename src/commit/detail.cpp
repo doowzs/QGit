@@ -6,17 +6,21 @@
  */
 
 #include "commit/detail.h"
+#include "tree/list.h"
+using namespace QGit;
 using namespace QGit::Commit;
 
 Detail::Detail(bool debug, const QString &hash, const QString &tree, const QStringList &parents,
-               const QString &author, const QString &title, const QString &message, QWidget *parent) : QWidget(parent, Qt::Window),
-                                                                                                       debug(debug),
-                                                                                                       hash(hash),
-                                                                                                       tree(tree),
-                                                                                                       parents(parents),
-                                                                                                       author(author),
-                                                                                                       title(title),
-                                                                                                       message(message) {
+               const QString &author, const QString &title, const QString &message, FS *fs,
+               QWidget *parent) : QWidget(parent, Qt::Window),
+                                  debug(debug),
+                                  hash(hash),
+                                  tree(tree),
+                                  parents(parents),
+                                  author(author),
+                                  title(title),
+                                  message(message),
+                                  fs(fs) {
   detailLayout = new QVBoxLayout(this);
 
   hashLabel = new QLabel(this);
@@ -35,6 +39,9 @@ Detail::Detail(bool debug, const QString &hash, const QString &tree, const QStri
   authorLabel = new QLabel(this);
   authorLabel->setText(author);
   detailLayout->addWidget(authorLabel);
+
+  treeListWidget = new Tree::List(debug, tree, fs, this);
+  detailLayout->addWidget(treeListWidget);
 
   this->setWindowTitle("提交详情");
   this->setLayout(detailLayout);
