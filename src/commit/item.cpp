@@ -58,7 +58,7 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
     } else {
       QString type = buffer.mid(0, 3);
       if (type == "par" /* parent */) {
-        parent = buffer.mid(7);
+        parents.append(buffer.mid(7));
       } else if (type == "aut" /* author */) {
         author = buffer.mid(7);
       } else if (type == "com" /* committer */) {
@@ -79,7 +79,7 @@ Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWi
 }
 
 /**
- * Get the hash of parent commit.
+ * Get the hash of parent commits.
  * @return parent
  */
-QString Item::getParent() const { return parent; }
+QStringList Item::getParents() const { return parents; }

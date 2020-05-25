@@ -6,6 +6,7 @@
  */
 
 #include "commit/list.h"
+
 #include "commit/item.h"
 #include "gitfs.h"
 using namespace QGit;
@@ -19,7 +20,11 @@ using namespace QGit::Commit;
  * @param parent
  */
 List::List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget *parent)
-    : QWidget(parent), debug(debug), path(path), hash(hash), fs(fs) {
+    : QWidget(parent),
+      debug(debug),
+      path(path),
+      hash(hash),
+      fs(fs) {
   listLayout = new QVBoxLayout(this);
 
   titleLabel = new QLabel(this);
@@ -28,14 +33,13 @@ List::List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget
   listLayout->addWidget(titleLabel);
 
   listWidget = new QListWidget(this);
-  {
-    QString cur = hash;
-    while (!cur.isEmpty()) {
-      Item *item = new Item(debug, path, cur, fs, listWidget);
-      items.push_back(item);
-      listWidget->addItem(item);
-      cur = item->getParent();
-    }
+  QStringList hashList = QStringList(hash);
+  while (!hashList.isEmpty()) {
+    QString cur = hashList.takeFirst();
+    Item *item = new Item(debug, path, cur, fs, listWidget);
+    items.push_back(item);
+    listWidget->addItem(item);
+    hashList += item->getParents();
   }
   listLayout->addWidget(listWidget);
 

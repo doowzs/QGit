@@ -19,7 +19,7 @@ class Item final : public QListWidgetItem {
  private:// Members
   const bool debug;
   QString hash;
-  QString parent;
+  QStringList parents;
   QString commit;
   QString author;
   QString committer;
@@ -30,7 +30,7 @@ class Item final : public QListWidgetItem {
   Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWidget *list);
 
  public:// Interfaces
-  QString getParent() const;
+  QStringList getParents() const;
 };
 }// namespace Commit
 }// namespace QGit
