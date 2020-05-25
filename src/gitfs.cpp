@@ -94,22 +94,27 @@ QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) 
   QByteArray data = QByteArray();
   idxFile.open(QFile::ReadOnly), pakFile.open(QFile::ReadOnly);
 
-  int l = 0, r = 0; // binary search
+  int l = 0, r = 0, nr = 0;// binary search
+  int offset = -1;         // offset of data in pack file
   idxFile.seek(1028);
-  QDataStream(idxFile.read(4)) >> r;
+  QDataStream(idxFile.read(4)) >> nr, r = nr - 1;
   while (l < r) {
     int m = (l + r) / 2;
     idxFile.seek(1032 + m * 20);
     QString cur = convertBytesToHash(idxFile.read(20));
-    qDebug() << cur;
     if (cur == hash) {
-      qDebug() << "found!";
+      idxFile.seek(1032 + nr * 24 + m * 4);
+      QDataStream(idxFile.read(4)) >> offset;
       break;
     } else if (cur < hash) {
-      r = m;
-    } else {
       l = m + 1;
+    } else {
+      r = m - 1;
     }
+  }
+
+  if (offset > 0) {
+    qDebug() << "found at offset" << offset;
   }
 
   idxFile.close(), pakFile.close();
@@ -127,7 +132,7 @@ QByteArray FS::getObject(const QString &hash) {
   QByteArray data = readFromObject(hash);
   if (data.isEmpty()) {
     if (debug) {
-      qDebug() << "no data in object file";
+      qDebug() << "no object file for" << hash;
     }
     data = readFromPackFile(hash);
   }
