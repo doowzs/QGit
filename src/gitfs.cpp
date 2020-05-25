@@ -99,8 +99,6 @@ QByteArray FS::readFromPackFile(const QString &hash) {
 QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) {
   QFile idxFile = QFile(path + "/pack/" + pack + ".idx");
   QFile pakFile = QFile(path + "/pack/" + pack + ".pack");
-  qDebug() << idxFile;
-  qDebug() << pakFile;
   if (!idxFile.exists() or !pakFile.exists()) {
     return QByteArray();
   }
@@ -121,7 +119,6 @@ QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) 
       idxFile.seek(1032 + nr * 24 + m * 4);
       offset = 0x0c; /* IDE cannot analyze the next line */
       QDataStream(idxFile.read(4)) >> offset;
-      qDebug() << "found at offset" << offset;
       break;
     } else if (cur < hash) {
       l = m + 1;
@@ -139,7 +136,6 @@ QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) 
       lengthBytes.push_back(buffer);
     } while ((uint32_t) buffer[0] & 0x8000U);
     uint32_t size = convertBytesToLength(lengthBytes);
-    qDebug() << "size is" << hex << size;
     data = pakFile.read(size);
   }
 
