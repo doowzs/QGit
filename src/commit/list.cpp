@@ -41,10 +41,12 @@ List::List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget
   QStringList hashList = QStringList(hash);
   while (!hashList.isEmpty()) {
     QString cur = hashList.takeFirst();
-    Item *item = new Item(debug, path, cur, fs, listWidget);
-    items.push_back(item);
-    listWidget->addItem(item);
-    hashList += item->getParents();
+    if (!cur.isEmpty()) {
+      Item *item = new Item(debug, path, cur, fs, listWidget);
+      items.push_back(item);
+      listWidget->addItem(item);
+      hashList += item->getParents();
+    }
   }
   listLayout->addWidget(listWidget);
 
