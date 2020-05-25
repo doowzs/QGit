@@ -20,7 +20,8 @@ class FS {
   FS(bool debug, const QString &path);
 
  private: // Internal Methods
-  QString convertBytesToHash(const QByteArray &bytes);
+  static QString convertBytesToHash(const QByteArray &bytes);
+  static uint32_t convertBytesToLength(const QByteArray &bytes);
   QByteArray readFromObject(const QString &hash);
   QByteArray readFromPackFile(const QString &hash);
   QByteArray readFromSinglePackFile(const QString &pack, const QString &hash);

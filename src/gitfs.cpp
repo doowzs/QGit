@@ -6,6 +6,8 @@
  */
 
 #include "gitfs.h"
+
+#include <zlib.h>
 using namespace QGit;
 
 /**
@@ -24,13 +26,26 @@ FS::FS(bool debug, const QString &path) : debug(debug),
 QString FS::convertBytesToHash(const QByteArray &bytes) {
   QString hash = QString();
   for (int i = 0; i < 20; ++i) {
-    unsigned char byte = bytes[i];
-    unsigned char u = (byte & 0xf0U) >> 4U;
-    unsigned char l = byte & 0x0fU;
-    hash += (QChar)((u > 0x9 ? 'a' - 0xa : '0') + u);
-    hash += (QChar)((l > 0x9 ? 'a' - 0xa : '0') + l);
+    uint32_t byte = bytes[i];
+    uint32_t hi = (byte & 0xf0U) >> 4U;
+    uint32_t lo = byte & 0x0fU;
+    hash += (QChar)((hi > 0x9 ? 'a' - 0xa : '0') + hi);
+    hash += (QChar)((lo > 0x9 ? 'a' - 0xa : '0') + lo);
   }
   return hash;
+}
+
+/**
+ * Convert a N-byte array into a length integer.
+ * @param bytes
+ * @return unsigned int of length
+ */
+uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
+  auto length = (uint32_t) bytes[0] & 0x0fU;
+  for (int i = 1; i < bytes.length(); ++i) {
+    length |= ((uint32_t) bytes[i] & 0x7fU) << (7U * i - 3U);
+  }
+  return compressBound(length);// bytes in file is size before compress
 }
 
 /**
@@ -95,16 +110,18 @@ QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) 
   idxFile.open(QFile::ReadOnly), pakFile.open(QFile::ReadOnly);
 
   int l = 0, r = 0, nr = 0;// binary search
-  int offset = -1;         // offset of data in pack file
+  uint32_t offset = 0U;    // offset of data in pack file
   idxFile.seek(1028);
   QDataStream(idxFile.read(4)) >> nr, r = nr - 1;
-  while (l < r) {
+  while (l <= r) {
     int m = (l + r) / 2;
     idxFile.seek(1032 + m * 20);
     QString cur = convertBytesToHash(idxFile.read(20));
     if (cur == hash) {
       idxFile.seek(1032 + nr * 24 + m * 4);
+      offset = 0x0c; /* IDE cannot analyze the next line */
       QDataStream(idxFile.read(4)) >> offset;
+      qDebug() << "found at offset" << offset;
       break;
     } else if (cur < hash) {
       l = m + 1;
@@ -113,8 +130,17 @@ QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) 
     }
   }
 
-  if (offset > 0) {
-    qDebug() << "found at offset" << offset;
+  if (offset != 0U) {
+    pakFile.seek(offset);
+    QByteArray lengthBytes = QByteArray();
+    QByteArray buffer = QByteArray();
+    do {
+      buffer = pakFile.read(1);
+      lengthBytes.push_back(buffer);
+    } while ((uint32_t) buffer[0] & 0x8000U);
+    uint32_t size = convertBytesToLength(lengthBytes);
+    qDebug() << "size is" << hex << size;
+    data = pakFile.read(size);
   }
 
   idxFile.close(), pakFile.close();
