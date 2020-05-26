@@ -18,7 +18,15 @@ using namespace QGit::Tree;
  */
 Item::Item(uint32_t mode, const QString &name, const QString &hash) : mode(mode),
                                                                       name(name),
-                                                                      hash(hash) {}
+                                                                      hash(hash) {
+  if (mode == 0x040000U) {
+    /* treat sub-tree as a folder */
+    this->setText(name + "/");
+  } else {
+    /* regular files and executables */
+    this->setText(name);
+  }
+}
 
 /**
  * Get the mode of the blob object.

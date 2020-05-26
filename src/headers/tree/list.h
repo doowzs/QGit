@@ -20,9 +20,22 @@ class List final : public QListWidget {
 
  private:// Members
   const bool debug;
+  QString current;
+  QStack<QString> parents;
+  QVector<QListWidgetItem *> items;
+  FS *fs;
+
+ private:// Widgets
+  QListWidgetItem *goBackItem{};
 
  public:// Constructors
   List(bool debug, const QString &root, FS *fs, QWidget *parent);
+
+ private:// Methods
+  void loadCurrentTree();
+
+ Q_SIGNALS:// Signals
+  void objectSelected(uint32_t mode, const QString &name, const QString &hash);
 };
 }// namespace Tree
 }// namespace QGit
