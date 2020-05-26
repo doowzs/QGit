@@ -171,7 +171,7 @@ QByteArray FS::getDecompressedObject(const QString &hash) {
 
   // inflate commit data with zlib
   uLong uncompressedLength = 4096;
-  QByteArray uncompressedData = QByteArray(uncompressedLength, '\0');
+  QByteArray uncompressedData = QByteArray(uncompressedLength, ' ');
   while (true) {
     int result = uncompress((Bytef *) uncompressedData.data(),
                             &uncompressedLength,
@@ -182,14 +182,14 @@ QByteArray FS::getDecompressedObject(const QString &hash) {
     } else if (result == Z_BUF_ERROR) {
       // buffer is not large enough
       uncompressedLength *= 2;
-      uncompressedData = QByteArray(uncompressedLength, '\0');
+      uncompressedData = QByteArray(uncompressedLength, ' ');
     } else {
       // fatal error occurred, abort the program
       qDebug() << "uncompress failed with code" << result;
       return QByteArray();
     }
   }
-  return uncompressedData;
+  return uncompressedData.trimmed();
 }
 
 /**

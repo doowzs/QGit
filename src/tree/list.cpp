@@ -13,25 +13,26 @@ using namespace QGit::Tree;
 
 List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QWidget(parent),
                                                                        debug(debug) {
-  QTextStream stream = fs->getDecompressedStream(root);
-
-  stream.readLine(); // skip first line: TREE SIZE \0
-  while (!stream.atEnd()) {
-    QChar temp;
-    QByteArray bytes;
+  if (debug) {
+    qDebug() << "tree root:" << root;
+  }
+  QByteArray data = fs->getDecompressedObject(root);
+  auto byte = data.constBegin() + data.indexOf('\0') + 1;
+  while (byte < data.constEnd() - 20) {
     QString mode, name, hash;
-    stream >> mode;
-    do {
-      stream >> temp;
-      if (temp != '\0') {
-        name += temp;
-      }
-    } while (temp != '\0');
-    for (int i = 0; i < 20; ++i) {
-      stream >> temp;
-      bytes.append(temp);
+    QByteArray hashBytes;
+    while (*byte != ' ') {
+      mode += *(byte++);
     }
-    hash = FS::convertBytesToHash(bytes);
+    ++byte; // skip the space between MODE and NAME
+    while (*byte != '\0') {
+      name += *(byte++);
+    }
+    ++ byte; // skip the null between NAME and HASH
+    for (int i = 0; i < 20; ++i) {
+      hashBytes += *(byte++);
+    }
+    hash = FS::convertBytesToHash(hashBytes);
     qDebug() << mode << name << hash;
   }
 }
