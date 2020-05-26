@@ -22,12 +22,13 @@ Panel::Panel(bool debug, const QString &root, FS *fs, QWidget *parent) : QWidget
                                                                          root(root),
                                                                          fs(fs) {
   panelLayout = new QHBoxLayout(this);
+  panelLayout->setContentsMargins(0, 9, 0, 0);
 
   listWidget = new List(debug, root, fs, this);
-  panelLayout->addWidget(listWidget);
+  panelLayout->addWidget(listWidget, 1);
 
   detailWidget = new Detail(debug, fs, this);
-  panelLayout->addWidget(detailWidget);
+  panelLayout->addWidget(detailWidget, 4);
 
   connect(listWidget, &List::objectSelected, this, &Panel::objectSelected);
 
