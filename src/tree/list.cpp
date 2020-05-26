@@ -6,12 +6,20 @@
  */
 
 #include "tree/list.h"
+#include "tree/item.h"
 
 #include "gitfs.h"
 using namespace QGit;
 using namespace QGit::Tree;
 
-List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QWidget(parent),
+/**
+ * Initialize a list blob object in a git tree.
+ * @param debug
+ * @param root
+ * @param fs
+ * @param parent
+ */
+List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QListWidget(parent),
                                                                        debug(debug) {
   QStringList list = QStringList({root});
   while (!list.isEmpty()) {
@@ -39,13 +47,19 @@ List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QWidget(p
         hash = FS::convertBytesToHash(hashBytes);
         qDebug() << hex << mode << name << hash;
         switch (mode) {
-          case 0x040000U: /* tree */
+          case 0x040000U: {
+            /* another file tree */
             list.append(hash);
             break;
-          case 0x100644U: /* file */
-          case 0x100755U: /* executable */
-          case 0x120000U: /* symbolic link */
+          }
+          case 0x100644U:
+          case 0x100755U:
+          case 0x120000U: {
+            /* file, executable and symbolic link */
+            Item *item = new Item(mode, name, hash);
+            this->addItem(item);
             break;
+          }
           default:
             qDebug() << "unknown object mode" << mode;
         }

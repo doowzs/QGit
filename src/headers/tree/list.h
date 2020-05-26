@@ -9,13 +9,13 @@
 #define QGIT_SRC_HEADERS_TREE_LIST_H_
 
 #include <QtCore>
-#include <QtWidgets/QWidget>
+#include <QtWidgets/QListWidget>
 
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
 
 namespace Tree {
-class List final : public QWidget {
+class List final : public QListWidget {
   Q_OBJECT
 
  private:// Members

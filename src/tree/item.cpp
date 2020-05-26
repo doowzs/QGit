@@ -10,25 +10,30 @@
 #include "gitfs.h"
 using namespace QGit::Tree;
 
-Item::Item(bool debug, QWidget *parent) : QPlainTextEdit(parent),
-                                          debug(debug) {
-  this->setEnabled(false);
-}
+/**
+ * Initialize a blob object item.
+ * @param mode
+ * @param name
+ * @param hash
+ */
+Item::Item(uint32_t mode, const QString &name, const QString &hash) : mode(mode),
+                                                                      name(name),
+                                                                      hash(hash) {}
 
-void Item::loadBlob(uint32_t mode, const QString &name, const QString &hash) {
-  switch (mode) {
-    case 0x100644: { /* file */
+/**
+ * Get the mode of the blob object.
+ * @return mode
+ */
+uint32_t Item::getMode() const { return mode; }
 
-    }
-    case 0x100755: { /* executable */
-      this->setPlainText("This is a binary executable file.");
-      break;
-    }
-    case 0x120000: { /* symbolic link */
-      this->setPlainText("This is a symbolic link.");
-      break;
-    }
-    default:
-      qDebug() << "unknown object mode" << mode;
-  }
-}
+/**
+ * Get the name of the blob object.
+ * @return name
+ */
+const QString Item::getName() const { return name; }
+
+/**
+ * Get the hash of the blob object.
+ * @return hash
+ */
+const QString Item::getHash() const { return hash; }

@@ -40,7 +40,7 @@ Detail::Detail(bool debug, const QString &hash, const QString &tree, const QStri
   authorLabel->setText(author);
   detailLayout->addWidget(authorLabel);
 
-  treePanel = new Tree::Panel(debug, hash, fs, this);
+  treePanel = new Tree::Panel(debug, tree, fs, this);
   detailLayout->addWidget(treePanel);
 
   this->setWindowTitle("提交详情");
