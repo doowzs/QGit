@@ -17,7 +17,7 @@ namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
 
 namespace Tree {
-QT_FORWARD_DECLARE_CLASS(List)
+QT_FORWARD_DECLARE_CLASS(Panel)
 }
 
 namespace Commit {
@@ -40,7 +40,7 @@ class Detail final : public QWidget {
   QLabel *titleLabel{};
   QLabel *messageLabel{};
   QLabel *authorLabel{};
-  Tree::List *treeListWidget{};
+  Tree::Panel *treePanel{};
 
  public:// Constructors
   Detail(bool debug, const QString &hash, const QString &tree, const QStringList &parents,

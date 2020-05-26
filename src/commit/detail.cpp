@@ -6,7 +6,7 @@
  */
 
 #include "commit/detail.h"
-#include "tree/list.h"
+#include "tree/panel.h"
 using namespace QGit;
 using namespace QGit::Commit;
 
@@ -40,8 +40,8 @@ Detail::Detail(bool debug, const QString &hash, const QString &tree, const QStri
   authorLabel->setText(author);
   detailLayout->addWidget(authorLabel);
 
-  treeListWidget = new Tree::List(debug, tree, fs, this);
-  detailLayout->addWidget(treeListWidget);
+  treePanel = new Tree::Panel(debug, hash, fs, this);
+  detailLayout->addWidget(treePanel);
 
   this->setWindowTitle("提交详情");
   this->setLayout(detailLayout);

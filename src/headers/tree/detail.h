@@ -11,19 +11,24 @@
 #include <QtCore>
 #include <QtWidgets/QPlainTextEdit>
 
-namespace QGit::Tree {
+namespace QGit {
+QT_FORWARD_DECLARE_CLASS(FS)
+
+namespace Tree {
 class Detail final : public QPlainTextEdit {
- Q_OBJECT
+  Q_OBJECT
 
  private:// Members
   const bool debug;
+  FS *fs;
 
  public:// Constructors
-  Item(bool debug, QWidget *parent);
+  Detail(bool debug, FS *fs, QWidget *parent);
 
- public: // Interfaces
+ public:// Interfaces
   void loadBlob(uint32_t mode, const QString &name, const QString &hash);
 };
-}// namespace QGit::Tree
+}// namespace Tree
+}// namespace QGit
 
 #endif//QGIT_SRC_HEADERS_TREE_DETAIL_H_
