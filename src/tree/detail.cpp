@@ -13,14 +13,16 @@ using namespace QGit::Tree;
 
 Detail::Detail(bool debug, FS *fs, QWidget *parent) : QPlainTextEdit(parent),
                                                       debug(debug),
-                                                      fs(fs) {}
+                                                      fs(fs) {
+  this->setReadOnly(true);
+}
 
-void Detail::loadBlob(uint32_t mode, const QString &name, const QString &hash) {
+void Detail::loadBlobContent(uint32_t mode, const QString &name, const QString &hash) {
   switch (mode) {
     case 0x100644: {
       /* file */
       QByteArray data = fs->getDecompressedObject(hash);
-      data = data.mid(data.indexOf('\0'));
+      data = data.mid(data.indexOf('\0') + 1);
       this->setPlainText(QString(data));
       break;
     }

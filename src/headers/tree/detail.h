@@ -26,7 +26,7 @@ class Detail final : public QPlainTextEdit {
   Detail(bool debug, FS *fs, QWidget *parent);
 
  public:// Interfaces
-  void loadBlob(uint32_t mode, const QString &name, const QString &hash);
+  void loadBlobContent(uint32_t mode, const QString &name, const QString &hash);
 };
 }// namespace Tree
 }// namespace QGit

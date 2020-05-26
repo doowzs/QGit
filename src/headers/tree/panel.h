@@ -9,8 +9,8 @@
 #define QGIT_SRC_HEADERS_TREE_PANEL_H_
 
 #include <QtCore>
-#include <QtWidgets/QWidget>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QWidget>
 
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
@@ -24,7 +24,7 @@ class Panel final : public QWidget {
 
  private:// Members
   const bool debug;
-  const QString hash;
+  const QString root;
   FS *fs;
 
  private:// Widgets
@@ -32,8 +32,11 @@ class Panel final : public QWidget {
   List *listWidget{};
   Detail *detailWidget{};
 
- public: // Constructors
-  Panel(bool debug, const QString &hash, FS *fs, QWidget *parent);
+ public:// Constructors
+  Panel(bool debug, const QString &root, FS *fs, QWidget *parent);
+
+ private Q_SLOTS:// Slots
+  void objectSelected(uint32_t mode, const QString &name, const QString &hash);
 };
 }// namespace Tree
 }// namespace QGit
