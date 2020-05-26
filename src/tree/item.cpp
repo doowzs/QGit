@@ -7,7 +7,7 @@
 
 #include "tree/item.h"
 
-#include "gitfs.h"
+#include <QFontDatabase>
 using namespace QGit::Tree;
 
 /**

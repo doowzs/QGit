@@ -14,7 +14,12 @@ using namespace QGit::Tree;
 Detail::Detail(bool debug, FS *fs, QWidget *parent) : QPlainTextEdit(parent),
                                                       debug(debug),
                                                       fs(fs) {
+  QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+  font.setPointSize(12);
+  this->setFont(font);
   this->setReadOnly(true);
+  this->setMinimumWidth(600);
+  this->setMinimumHeight(600);
 }
 
 void Detail::loadBlobContent(uint32_t mode, const QString &name, const QString &hash) {

@@ -7,6 +7,8 @@
 
 #include "tree/list.h"
 
+#include <QFontDatabase>
+
 #include "gitfs.h"
 #include "tree/item.h"
 using namespace QGit;
@@ -25,6 +27,12 @@ List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QListWidg
   goBackItem = new QListWidgetItem(this);
   goBackItem->setText("../");
   this->addItem(goBackItem);
+  this->setMinimumWidth(120);
+
+  /* use monospaced font for file list */
+  QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+  font.setPointSize(12);
+  this->setFont(font);
 
   current = root;
   this->loadCurrentTree();
