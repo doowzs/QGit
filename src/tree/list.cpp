@@ -13,26 +13,43 @@ using namespace QGit::Tree;
 
 List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QWidget(parent),
                                                                        debug(debug) {
-  if (debug) {
-    qDebug() << "tree root:" << root;
-  }
-  QByteArray data = fs->getDecompressedObject(root);
-  auto byte = data.constBegin() + data.indexOf('\0') + 1;
-  while (byte < data.constEnd() - 20) {
-    QString mode, name, hash;
-    QByteArray hashBytes;
-    while (*byte != ' ') {
-      mode += *(byte++);
+  QStringList list = QStringList({root});
+  while (!list.isEmpty()) {
+    QString cur = list.takeFirst();
+    if (!cur.isEmpty()) {
+      QByteArray data = fs->getDecompressedObject(cur);
+      auto byte = data.constBegin() + data.indexOf('\0') + 1;
+      while (byte < data.constEnd() - 20) {
+        uint32_t mode = 0x000000;
+        QString name = QString(), hash = QString();
+        QString modeString = QString();
+        QByteArray hashBytes = QByteArray();
+        while (*byte != ' ') {
+          modeString += *(byte++);
+        }
+        ++byte;// skip the space between MODE and NAME
+        while (*byte != '\0') {
+          name += *(byte++);
+        }
+        ++byte;// skip the null between NAME and HASH
+        for (int i = 0; i < 20; ++i) {
+          hashBytes += *(byte++);
+        }
+        mode = modeString.toUInt(nullptr, 16);
+        hash = FS::convertBytesToHash(hashBytes);
+        qDebug() << hex << mode << name << hash;
+        switch (mode) {
+          case 0x040000U: /* tree */
+            list.append(hash);
+            break;
+          case 0x100644U: /* file */
+          case 0x100755U: /* executable */
+          case 0x120000U: /* symbolic link */
+            break;
+          default:
+            qDebug() << "unknown object mode" << mode;
+        }
+      }
     }
-    ++byte; // skip the space between MODE and NAME
-    while (*byte != '\0') {
-      name += *(byte++);
-    }
-    ++ byte; // skip the null between NAME and HASH
-    for (int i = 0; i < 20; ++i) {
-      hashBytes += *(byte++);
-    }
-    hash = FS::convertBytesToHash(hashBytes);
-    qDebug() << mode << name << hash;
   }
 }
