@@ -10,8 +10,10 @@
 
 #include <QtCore>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QPushButton>
 
 namespace QGit::Commit {
 QT_FORWARD_DECLARE_CLASS(Item)
@@ -27,6 +29,7 @@ class Detail final : public QWidget {
   QLabel *hashLabel{};
   QLabel *titleLabel{};
   QLabel *messageLabel{};
+  QLabel *parentsLabel{};
   QLabel *authorLabel{};
 
  public:// Constructors

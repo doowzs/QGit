@@ -6,10 +6,10 @@
  */
 
 #include "commit/detail.h"
-#include "commit/item.h"
 
 #include <QFontDatabase>
 
+#include "commit/item.h"
 #include "tree/panel.h"
 using namespace QGit;
 using namespace QGit::Commit;
@@ -39,6 +39,10 @@ Detail::Detail(bool debug, QWidget *parent) : QWidget(parent),
   messageLabel = new QLabel(this);
   detailLayout->addWidget(messageLabel);
 
+  parentsLabel = new QLabel(this);
+  parentsLabel->setTextFormat(Qt::RichText);
+  detailLayout->addWidget(parentsLabel);
+
   authorLabel = new QLabel(this);
   detailLayout->addWidget(authorLabel);
 
@@ -58,5 +62,12 @@ void Detail::loadCommit(const Item *item) {
   hashLabel->setText(item->getHash());
   authorLabel->setText(item->getAuthor());
   titleLabel->setText(item->getTitle());
+
+  QString parentString = "Child commit of ";
+  for (const QString &parent : item->getParents()) {
+    parentString += "<code>" + parent.mid(0, 8) + "</code>";
+  }
+  parentsLabel->setText(parentString);
+
   messageLabel->setText(item->getMessage());
 }
