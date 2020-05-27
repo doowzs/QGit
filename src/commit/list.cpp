@@ -31,9 +31,7 @@ List::List(bool debug, FS *fs, QWidget *parent)
   this->setFixedHeight(600);
 
   connect(this, &QListWidget::itemDoubleClicked, this, [&](QListWidgetItem *_item) -> void {
-    auto item = dynamic_cast<Item *>(_item);
-    emit commitSelected(item->getHash(), item->getTree(), item->getParents(),
-                        item->getAuthor(), item->getTitle(), item->getMessage());
+    emit commitSelected(dynamic_cast<const Item *>(_item));
   });
 }
 

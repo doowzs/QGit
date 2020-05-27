@@ -32,8 +32,7 @@ class List final : public QListWidget {
   void loadCommits(const QString &hash);
 
  Q_SIGNALS:// Signals
-  void commitSelected(const QString &hash, const QString &tree, const QStringList &parents,
-                      const QString &author, const QString &title, const QString &message);
+  void commitSelected(const Item *item);
 };
 }// namespace Commit
 }// namespace QGit

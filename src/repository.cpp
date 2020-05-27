@@ -7,9 +7,11 @@
 
 #include "repository.h"
 
+#include "commit/item.h"
 #include "commit/list.h"
 #include "gitfs.h"
 #include "reference/list.h"
+#include "snapshot.h"
 using namespace QGit;
 
 /**
@@ -31,12 +33,16 @@ Repository::Repository(bool debug, const QString &path, QWidget *parent)
   commitList = new Commit::List(debug, fs, this);
   repositoryLayout->addWidget(commitList);
 
+  snapshotWindow = new Snapshot(debug, fs, this);
   connect(referenceList, &Reference::List::referenceSelected, this,
           [&](const QString &name, const QString &hash) -> void {
             commitList->loadCommits(hash);
           });
   connect(commitList, &Commit::List::commitSelected, this,
-          [&])
+          [&](const Commit::Item *item) -> void {
+            snapshotWindow->loadCommit(item);
+            snapshotWindow->show();
+          });
 
   this->setWindowTitle("提交记录");
   this->setLayout(repositoryLayout);

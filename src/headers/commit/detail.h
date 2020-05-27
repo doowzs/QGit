@@ -13,26 +13,14 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
-namespace QGit {
-QT_FORWARD_DECLARE_CLASS(FS)
+namespace QGit::Commit {
+QT_FORWARD_DECLARE_CLASS(Item)
 
-namespace Tree {
-QT_FORWARD_DECLARE_CLASS(Panel)
-}
-
-namespace Commit {
 class Detail final : public QWidget {
   Q_OBJECT
 
  private:// Members
   const bool debug;
-  const QString hash;
-  const QString tree;
-  const QStringList parents;
-  const QString author;
-  const QString title;
-  const QString message;
-  FS *fs;
 
  private:// Widgets
   QVBoxLayout *detailLayout{};
@@ -40,13 +28,13 @@ class Detail final : public QWidget {
   QLabel *titleLabel{};
   QLabel *messageLabel{};
   QLabel *authorLabel{};
-  Tree::Panel *treePanel{};
 
  public:// Constructors
-  Detail(bool debug, const QString &hash, const QString &tree, const QStringList &parents,
-         const QString &author, const QString &title, const QString &message, FS *fs, QWidget *parent);
+  Detail(bool debug, QWidget *parent);
+
+ public Q_SLOTS:// Slots
+  void loadCommit(const Item *item);
 };
-}// namespace Commit
-}// namespace QGit
+}// namespace QGit::Commit
 
 #endif//QGIT_SRC_COMMIT_DETAIL_H_

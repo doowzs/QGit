@@ -14,6 +14,7 @@
 
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
+QT_FORWARD_DECLARE_CLASS(Snapshot)
 
 namespace Reference {
 QT_FORWARD_DECLARE_CLASS(List)
@@ -35,6 +36,7 @@ class Repository final : public QWidget {
   QHBoxLayout *repositoryLayout{};
   Reference::List *referenceList{};
   Commit::List *commitList{};
+  Snapshot *snapshotWindow{};
 
  public: // Constructors
   Repository(bool debug, const QString &path, QWidget *parent);
