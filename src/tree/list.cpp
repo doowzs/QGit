@@ -9,6 +9,7 @@
 
 #include <QFontDatabase>
 
+#include "commit/item.h"
 #include "gitfs.h"
 #include "tree/item.h"
 using namespace QGit;
@@ -21,7 +22,7 @@ using namespace QGit::Tree;
  * @param fs
  * @param parent
  */
-List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QListWidget(parent),
+List::List(bool debug, FS *fs, QWidget *parent) : QListWidget(parent),
                                                                        debug(debug),
                                                                        fs(fs) {
   goBackItem = new QListWidgetItem(this);
@@ -34,9 +35,6 @@ List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QListWidg
   font.setPointSize(12);
   this->setFont(font);
 
-  current = root;
-  this->loadCurrentTree();
-
   connect(this, &QListWidget::itemDoubleClicked, this, [&](QListWidgetItem *_item) -> void {
     if (_item == goBackItem) {
       if (!parents.isEmpty()) {
@@ -46,7 +44,7 @@ List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QListWidg
     } else {
       Item *item = dynamic_cast<Item *>(_item);
       if (item->getMode() != 0x040000U) {
-        emit objectSelected(item->getMode(), item->getName(), item->getHash());
+        emit objectSelected(item);
       } else {
         parents.push_back(current);
         current = item->getHash();
@@ -54,6 +52,20 @@ List::List(bool debug, const QString &root, FS *fs, QWidget *parent) : QListWidg
       }
     }
   });
+}
+
+/**
+ * Slot: When a commit is selected, reload the current list.
+ * @param hash
+ */
+void List::commitSelected(const Commit::Item *item) {
+  if (commit != item->getHash()) {
+    commit = item->getHash();
+    current = item->getTree();
+    parents.clear();
+    this->loadCurrentTree();
+    emit objectSelected(nullptr);
+  }
 }
 
 /**

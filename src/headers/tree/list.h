@@ -14,12 +14,19 @@
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
 
+namespace Commit {
+QT_FORWARD_DECLARE_CLASS(Item)
+}
+
 namespace Tree {
+QT_FORWARD_DECLARE_CLASS(Item)
+
 class List final : public QListWidget {
   Q_OBJECT
 
  private:// Members
   const bool debug;
+  QString commit;
   QString current;
   QStack<QString> parents;
   QVector<QListWidgetItem *> items;
@@ -29,13 +36,16 @@ class List final : public QListWidget {
   QListWidgetItem *goBackItem{};
 
  public:// Constructors
-  List(bool debug, const QString &root, FS *fs, QWidget *parent);
+  List(bool debug, FS *fs, QWidget *parent);
 
  private:// Methods
   void loadCurrentTree();
 
+ public Q_SLOTS:// Slots
+  void commitSelected(const Commit::Item *item);
+
  Q_SIGNALS:// Signals
-  void objectSelected(uint32_t mode, const QString &name, const QString &hash);
+  void objectSelected(const Item *item);
 };
 }// namespace Tree
 }// namespace QGit

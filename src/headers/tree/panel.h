@@ -15,16 +15,20 @@
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
 
+namespace Commit {
+QT_FORWARD_DECLARE_CLASS(Item)
+}
+
 namespace Tree {
 QT_FORWARD_DECLARE_CLASS(List)
 QT_FORWARD_DECLARE_CLASS(Detail)
+QT_FORWARD_DECLARE_CLASS(Item)
 
 class Panel final : public QWidget {
   Q_OBJECT
 
  private:// Members
   const bool debug;
-  const QString root;
   FS *fs;
 
  private:// Widgets
@@ -33,10 +37,13 @@ class Panel final : public QWidget {
   Detail *detailWidget{};
 
  public:// Constructors
-  Panel(bool debug, const QString &root, FS *fs, QWidget *parent);
+  Panel(bool debug, FS *fs, QWidget *parent);
 
- private Q_SLOTS:// Slots
-  void objectSelected(uint32_t mode, const QString &name, const QString &hash);
+ public Q_SLOTS:// Public Slots
+  void commitSelected(const Commit::Item *item);
+
+ private Q_SLOTS:// Private Slots
+  void objectSelected(const Item *item);
 };
 }// namespace Tree
 }// namespace QGit

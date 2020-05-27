@@ -6,8 +6,12 @@
  */
 
 #include "tree/panel.h"
-#include "tree/list.h"
+
+#include "commit/item.h"
 #include "tree/detail.h"
+#include "tree/list.h"
+#include "tree/item.h"
+using namespace QGit;
 using namespace QGit::Tree;
 
 /**
@@ -17,14 +21,13 @@ using namespace QGit::Tree;
  * @param fs
  * @param parent
  */
-Panel::Panel(bool debug, const QString &root, FS *fs, QWidget *parent) : QWidget(parent),
-                                                                         debug(debug),
-                                                                         root(root),
-                                                                         fs(fs) {
+Panel::Panel(bool debug, FS *fs, QWidget *parent) : QWidget(parent),
+                                                    debug(debug),
+                                                    fs(fs) {
   panelLayout = new QHBoxLayout(this);
   panelLayout->setContentsMargins(0, 9, 0, 0);
 
-  listWidget = new List(debug, root, fs, this);
+  listWidget = new List(debug, fs, this);
   panelLayout->addWidget(listWidget, 1);
 
   detailWidget = new Detail(debug, fs, this);
@@ -36,11 +39,21 @@ Panel::Panel(bool debug, const QString &root, FS *fs, QWidget *parent) : QWidget
 }
 
 /**
- * Slot: When an object is selected, load its content from blob file.
- * @param mode
- * @param name
- * @param hash
+ * Slot: When a commit is selected, refresh the panel's content.
+ * @param item
  */
-void Panel::objectSelected(uint32_t mode, const QString &name, const QString &hash) {
-  detailWidget->loadBlobContent(mode, name, hash);
+void Panel::commitSelected(const Commit::Item *item) {
+  listWidget->commitSelected(item);
+}
+
+/**
+ * Slot: When an object is selected, load its content from blob file.
+ * @param item
+ */
+void Panel::objectSelected(const Item *item) {
+  if (item == nullptr) {
+    detailWidget->setPlainText(nullptr);
+  } else {
+    detailWidget->loadBlobContent(item->getMode(), item->getName(), item->getHash());
+  }
 }

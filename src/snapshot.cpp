@@ -8,6 +8,7 @@
 #include "snapshot.h"
 
 #include "commit/detail.h"
+#include "commit/item.h"
 #include "gitfs.h"
 #include "tree/panel.h"
 using namespace QGit;
@@ -23,8 +24,11 @@ Snapshot::Snapshot(bool debug, FS *fs, QWidget *parent) : QWidget(parent, Qt::Wi
                                                           fs(fs) {
   snapshotLayout = new QVBoxLayout(this);
 
-  commitDetailWidget = new Commit::Detail(fs, this);
+  commitDetailWidget = new Commit::Detail(debug, this);
   snapshotLayout->addWidget(commitDetailWidget);
+
+  treePanelWidget = new Tree::Panel(debug, fs, this);
+  snapshotLayout->addWidget(treePanelWidget);
 
   this->setWindowTitle("提交详情");
   this->setLayout(snapshotLayout);
@@ -36,4 +40,5 @@ Snapshot::Snapshot(bool debug, FS *fs, QWidget *parent) : QWidget(parent, Qt::Wi
  */
 void Snapshot::loadCommit(const Commit::Item *item) {
   commitDetailWidget->loadCommit(item);
+  treePanelWidget->commitSelected(item);
 }
