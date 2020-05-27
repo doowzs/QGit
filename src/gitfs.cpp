@@ -24,7 +24,7 @@ FS::FS(bool debug, const QString &path) : debug(debug),
  * @return object data | []
  */
 QByteArray FS::readFromObject(const QString &hash) {
-  QFile file = QFile(path + "/" + hash.mid(0, 2) + "/" + hash.mid(2));
+  QFile file = QFile(path + "/objects/" + hash.mid(0, 2) + "/" + hash.mid(2));
   if (file.exists()) {
     try {
       file.open(QFile::ReadOnly);
@@ -45,7 +45,7 @@ QByteArray FS::readFromObject(const QString &hash) {
  * @return object data | []
  */
 QByteArray FS::readFromPackFile(const QString &hash) {
-  QDir folder = QDir(path + "/pack");
+  QDir folder = QDir(path + "/objects/pack");
   QStringList packFileList = folder.entryList(QStringList("*.pack"), QDir::Files | QDir::NoDotAndDotDot);
   QByteArray data = QByteArray();
   for (const QString &packFile : packFileList) {
@@ -64,8 +64,8 @@ QByteArray FS::readFromPackFile(const QString &hash) {
  * @return object data | []
  */
 QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) {
-  QFile idxFile = QFile(path + "/pack/" + pack + ".idx");
-  QFile pakFile = QFile(path + "/pack/" + pack + ".pack");
+  QFile idxFile = QFile(path + "/objects/pack/" + pack + ".idx");
+  QFile pakFile = QFile(path + "/objects/pack/" + pack + ".pack");
   if (!idxFile.exists() or !pakFile.exists()) {
     return QByteArray();
   }

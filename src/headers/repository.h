@@ -13,8 +13,14 @@
 #include <QtWidgets/QHBoxLayout>
 
 namespace QGit {
+QT_FORWARD_DECLARE_CLASS(FS)
+
 namespace Reference {
-QT_FORWARD_DECLARE_CLASS(Panel)
+QT_FORWARD_DECLARE_CLASS(List)
+}
+
+namespace Commit {
+QT_FORWARD_DECLARE_CLASS(List)
 }
 
 class Repository final : public QWidget {
@@ -23,13 +29,16 @@ class Repository final : public QWidget {
  private: // Members
   const bool debug;
   QString root;
+  FS *fs;
 
  private: // Widgets
   QHBoxLayout *repositoryLayout{};
-  Reference::Panel *referencePanel{};
+  Reference::List *referenceList{};
+  Commit::List *commitList{};
 
  public: // Constructors
   Repository(bool debug, const QString &path, QWidget *parent);
+  ~Repository() override;
 };
 }
 

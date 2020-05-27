@@ -34,12 +34,12 @@ void Root::openRepository(const QString &path) {
   }
   if (QDir(path + "/.git").exists()) {
     repositoryWidget = new Repository(debug, path, this);
-    this->setCentralWidget(repositoryWidget);
+    repositoryWidget->show();
+    this->hide();
   } else {
     if (debug) {
       qDebug() << "error:" << path << "does not contain .git folder";
     }
     QMessageBox::about(this, "错误", "打开的目录不是Git仓库");
-    this->setCentralWidget(welcomeWidget);
   }
 }

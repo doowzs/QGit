@@ -27,7 +27,7 @@ class Item final : public QListWidgetItem {
   QString message;
 
  public:// Constructors
-  Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWidget *list);
+  Item(bool debug, const QString &hash, FS *fs, QListWidget *list);
 
  public:// Interfaces
   [[nodiscard]] QString getHash() const;

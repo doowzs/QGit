@@ -10,25 +10,17 @@
 
 #include <QtCore>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
-#include <QtWidgets/QListWidgetItem>
 
 namespace QGit::Reference {
 QT_FORWARD_DECLARE_CLASS(Item)
 
-class List final : public QWidget {
+class List final : public QListWidget {
  Q_OBJECT
 
  private: // Members
   const bool debug;
   const QString path; // path to .git/heads
-
- private: // Widgets
-  QVBoxLayout *listLayout{};
-  QLabel *titleLabel{};
-  QListWidget *listWidget{};
   QVector<Item *> items;
 
  public: // Constructors

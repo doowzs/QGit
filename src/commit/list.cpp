@@ -7,6 +7,8 @@
 
 #include "commit/list.h"
 
+#include <QFontDatabase>
+
 #include "commit/item.h"
 #include "gitfs.h"
 using namespace QGit;
@@ -15,42 +17,41 @@ using namespace QGit::Commit;
 /**
  * Initialize a list widget.
  * @param debug
- * @param path
- * @param hash
+ * @param fs
  * @param parent
  */
-List::List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget *parent)
-    : QWidget(parent),
+List::List(bool debug, FS *fs, QWidget *parent)
+    : QListWidget(parent),
       debug(debug),
-      path(path),
-      hash(hash),
       fs(fs) {
-  listLayout = new QVBoxLayout(this);
+  QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+  font.setPointSize(12);
+  this->setFont(font);
+  this->setMinimumWidth(400);
+  this->setFixedHeight(600);
 
-  titleLabel = new QLabel(this);
-  titleLabel->setFont(QFont(nullptr, 25));
-  titleLabel->setText("Commits");
-  listLayout->addWidget(titleLabel);
-
-  listWidget = new QListWidget(this);
-  connect(listWidget, &QListWidget::itemSelectionChanged, this, [&]() -> void {
-    auto item = dynamic_cast<Item *>(listWidget->selectedItems()[0]);
+  connect(this, &QListWidget::itemDoubleClicked, this, [&](QListWidgetItem *_item) -> void {
+    auto item = dynamic_cast<Item *>(_item);
     emit commitSelected(item->getHash(), item->getTree(), item->getParents(),
                         item->getAuthor(), item->getTitle(), item->getMessage());
   });
+}
+
+void List::loadCommits(const QString &hash) {
+  for (Item *item : items) {
+    this->removeItemWidget(item);
+  }
+  qDeleteAll(items);
+  items.clear();
+
   QStringList hashList = QStringList(hash);
   while (!hashList.isEmpty()) {
     QString cur = hashList.takeFirst();
     if (!cur.isEmpty()) {
-      Item *item = new Item(debug, path, cur, fs, listWidget);
+      Item *item = new Item(debug, cur, fs, this);
       items.push_back(item);
-      listWidget->addItem(item);
+      this->addItem(item);
       hashList += item->getParents();
     }
   }
-  listLayout->addWidget(listWidget);
-
-  this->setLayout(listLayout);
-  this->setMinimumWidth(400);
-  this->setFixedHeight(600);
 }

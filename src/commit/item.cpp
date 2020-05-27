@@ -13,11 +13,10 @@ using namespace QGit::Commit;
 /**
  * Initialize a git commit item.
  * @param debug
- * @param path
  * @param hash
  * @param parent
  */
-Item::Item(bool debug, const QString &path, const QString &hash, FS *fs, QListWidget *list)
+Item::Item(bool debug, const QString &hash, FS *fs, QListWidget *list)
     : QListWidgetItem(list), debug(debug), hash(hash) {
   QTextStream stream = fs->getDecompressedStream(hash);
 

@@ -9,10 +9,7 @@
 #define QGIT_SRC_HEADERS_COMMIT_LIST_H_
 
 #include <QtCore>
-#include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
 
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
@@ -20,23 +17,19 @@ QT_FORWARD_DECLARE_CLASS(FS)
 namespace Commit {
 QT_FORWARD_DECLARE_CLASS(Item)
 
-class List final : public QWidget {
+class List final : public QListWidget {
   Q_OBJECT
 
  private:// Members
   const bool debug;
-  const QString path;
-  const QString hash;
-  QVector<Item *> items;
   FS *fs{};
-
- private:// Widgets
-  QVBoxLayout *listLayout{};
-  QLabel *titleLabel{};
-  QListWidget *listWidget{};
+  QVector<Item *> items;
 
  public:// Constructors
-  List(bool debug, const QString &path, const QString &hash, FS *fs, QWidget *parent);
+  List(bool debug, FS *fs, QWidget *parent);
+
+ public Q_SLOTS: // Interfaces
+  void loadCommits(const QString &hash);
 
  Q_SIGNALS:// Signals
   void commitSelected(const QString &hash, const QString &tree, const QStringList &parents,
