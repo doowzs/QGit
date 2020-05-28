@@ -41,18 +41,26 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
     recentLayout->addWidget(recentListWidget);
 
     recentWidget->setLayout(recentLayout);
-    welcomeLayout->addWidget(recentWidget);
+    welcomeLayout->addWidget(recentWidget, 3);
   }
 
   {
     menuWidget = new QWidget(this);
     menuLayout = new QVBoxLayout(menuWidget);
+    menuLayout->addWidget(new QWidget(menuWidget), 1);
+
+    iconLabel = new QLabel(menuWidget);
+    iconLabel->setAlignment(Qt::AlignCenter);
+    iconLabel->setFont(QFont(FONT_ICON_FAMILY, 50, QFont::Thin));
+    iconLabel->setText(ICON_FA_LAPTOP_CODE);
+    menuLayout->addWidget(iconLabel);
 
     titleLabel = new QLabel(menuWidget);
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setFont(QFont(nullptr, 30));
     titleLabel->setText(Constants::Application::name);
     menuLayout->addWidget(titleLabel);
+    menuLayout->addWidget(new QWidget(menuWidget), 1);
 
     openButton = new QPushButton(menuWidget);
     openButton->setFont(QFont(FONT_ICON_FAMILY));
@@ -65,6 +73,7 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
     exitButton->setText(QString(ICON_FA_DOOR_OPEN) + QString(" 退出程序"));
     connect(exitButton, &QPushButton::released, this, &Welcome::closeApplication);
     menuLayout->addWidget(exitButton);
+    menuLayout->addWidget(new QWidget(menuWidget), 1);
 
     versionLabel = new QLabel(menuWidget);
     versionLabel->setAlignment(Qt::AlignRight);
@@ -77,7 +86,7 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
     menuLayout->addWidget(authorLabel);
 
     menuWidget->setLayout(menuLayout);
-    welcomeLayout->addWidget(menuWidget);
+    welcomeLayout->addWidget(menuWidget, 2);
   }
 
   this->parentWidget()->setWindowTitle("欢迎使用");
