@@ -9,6 +9,7 @@
 
 #include <QFontDatabase>
 
+#include "IconFontCppHeaders/IconsFontAwesome5.h"
 #include "commit/item.h"
 #include "tree/panel.h"
 using namespace QGit;
@@ -23,28 +24,100 @@ Detail::Detail(bool debug, QWidget *parent) : QWidget(parent),
                                               debug(debug) {
   detailLayout = new QVBoxLayout(this);
 
-  QFont hashFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-  hashFont.setPointSize(15);
-  hashLabel = new QLabel(this);
-  hashLabel->setFont(hashFont);
-  detailLayout->addWidget(hashLabel);
+  {
+    auto hashWidget = new QWidget(this);
+    auto hashLayout = new QHBoxLayout(hashWidget);
+    hashLayout->setContentsMargins(0, 0, 0, 0);
 
-  QFont titleFont = QFontDatabase::systemFont(QFontDatabase::TitleFont);
-  titleFont.setPointSize(15);
-  titleFont.setBold(true);
-  titleLabel = new QLabel(this);
-  titleLabel->setFont(titleFont);
-  detailLayout->addWidget(titleLabel);
+    auto hashIcon = new QLabel(hashWidget);
+    hashIcon->setFont(QFont(FONT_ICON_FAMILY));
+    hashIcon->setText(ICON_FA_CODE);
+    hashIcon->setFixedWidth(20);
+    hashIcon->setAlignment(Qt::AlignCenter);
+    hashLayout->addWidget(hashIcon);
 
-  messageLabel = new QLabel(this);
-  detailLayout->addWidget(messageLabel);
+    QFont hashFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    hashFont.setPointSize(15);
+    hashLabel = new QLabel(this);
+    hashLabel->setFont(hashFont);
+    hashLayout->addWidget(hashLabel, 1);
 
-  parentsLabel = new QLabel(this);
-  parentsLabel->setTextFormat(Qt::RichText);
-  detailLayout->addWidget(parentsLabel);
+    hashWidget->setLayout(hashLayout);
+    detailLayout->addWidget(hashWidget);
+  }
 
-  authorLabel = new QLabel(this);
-  detailLayout->addWidget(authorLabel);
+  {
+    auto messageWidget = new QWidget(this);
+    auto messageLayout = new QHBoxLayout(messageWidget);
+    messageLayout->setContentsMargins(0, 0, 0, 0);
+
+    auto messageIcon = new QLabel(messageWidget);
+    messageIcon->setFont(QFont(FONT_ICON_FAMILY));
+    messageIcon->setText(ICON_FA_EDIT);
+    messageIcon->setFixedWidth(20);
+    messageIcon->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    messageIcon->setContentsMargins(0, 5, 0, 0);
+    messageLayout->addWidget(messageIcon);
+
+    auto messageInnerWidget = new QWidget(this);
+    auto messageInnerLayout = new QVBoxLayout(this);
+    messageInnerLayout->setContentsMargins(0, 0, 0, 0);
+    {
+      QFont titleFont = QFontDatabase::systemFont(QFontDatabase::TitleFont);
+      titleFont.setPointSize(15);
+      titleFont.setBold(true);
+      titleLabel = new QLabel(this);
+      titleLabel->setFont(titleFont);
+      messageInnerLayout->addWidget(titleLabel);
+
+      messageLabel = new QLabel(this);
+      messageInnerLayout->addWidget(messageLabel);
+    }
+    messageInnerWidget->setLayout(messageInnerLayout);
+    messageLayout->addWidget(messageInnerWidget);
+
+    messageWidget->setLayout(messageLayout);
+    detailLayout->addWidget(messageWidget);
+  }
+
+  {
+    auto parentWidget = new QWidget(this);
+    auto parentLayout = new QHBoxLayout(this);
+    parentLayout->setContentsMargins(0, 0, 0, 0);
+
+    auto parentIcon = new QLabel(parentWidget);
+    parentIcon->setFont(QFont(FONT_ICON_FAMILY));
+    parentIcon->setText(ICON_FA_CODE_BRANCH);
+    parentIcon->setFixedWidth(20);
+    parentIcon->setAlignment(Qt::AlignCenter);
+    parentLayout->addWidget(parentIcon);
+
+    parentsLabel = new QLabel(this);
+    parentsLabel->setTextFormat(Qt::RichText);
+    parentLayout->addWidget(parentsLabel);
+
+    parentWidget->setLayout(parentLayout);
+    detailLayout->addWidget(parentWidget);
+  }
+
+  {
+    auto authorWidget = new QWidget(this);
+    auto authorLayout = new QHBoxLayout(this);
+    authorLayout->setContentsMargins(0, 0, 0, 0);
+
+    auto authorIcon = new QLabel(authorWidget);
+    authorIcon->setFont(QFont(FONT_ICON_FAMILY));
+    authorIcon->setText(ICON_FA_USER);
+    authorIcon->setFixedWidth(20);
+    authorIcon->setAlignment(Qt::AlignCenter);
+    authorLayout->addWidget(authorIcon);
+
+    authorLabel = new QLabel(this);
+    authorLayout->addWidget(authorLabel);
+
+    authorWidget->setLayout(authorLayout);
+    detailLayout->addWidget(authorWidget);
+  }
 
   this->setLayout(detailLayout);
 }
