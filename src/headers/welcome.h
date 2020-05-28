@@ -12,7 +12,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QListWidget>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QFileDialog>
@@ -29,7 +29,8 @@ class Welcome final : public QWidget {
   QHBoxLayout *welcomeLayout{};
   QWidget *recentWidget{};
   QVBoxLayout *recentLayout{};
-  QListWidget *recentListWidget{};
+  QScrollArea *recentScrollArea{};
+  QVector<QWidget *> recentItems{};
   QWidget *menuWidget{};
   QVBoxLayout *menuLayout{};
   QLabel *iconLabel{};

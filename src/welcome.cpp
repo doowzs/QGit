@@ -19,29 +19,37 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
                                                                                debug(debug) {
   welcomeLayout = new QHBoxLayout(this);
 
-  {
+  if (!recentList.isEmpty()) {
+    recentScrollArea = new QScrollArea(recentWidget);
     recentWidget = new QWidget(this);
     recentLayout = new QVBoxLayout(recentWidget);
+    recentLayout->setAlignment(Qt::AlignTop);
 
-    QFont recentFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    recentFont.setPointSize(12);
-
-    recentListWidget = new QListWidget(recentWidget);
+    QFont fileFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    fileFont.setPointSize(12);
     for (const QString &recent : recentList) {
-      auto *item = new QListWidgetItem(recent);
-      item->setText(recent);
-      recentListWidget->addItem(recent);
+      auto recentItem = new QPushButton(recentWidget);
+      auto recentItemLayout = new QVBoxLayout(recentItem);
+
+      auto recentNameLabel = new QLabel(recentItem);
+      recentNameLabel->setText(recent.mid(recent.lastIndexOf("/")));
+      recentItemLayout->addWidget(recentNameLabel);
+
+      auto recentFileLabel = new QLabel(recentItem);
+      recentFileLabel->setFont(fileFont);
+      recentFileLabel->setText(recent);
+      recentItemLayout->addWidget(recentFileLabel);
+
+      recentItem->setLayout(recentItemLayout);
+      recentLayout->addWidget(recentItem);
+      recentItems.push_back(recentItem);
     }
-    connect(recentListWidget, &QListWidget::itemDoubleClicked, this,
-            [&](QListWidgetItem *item) -> void {
-              emit repositorySelected(item->text());
-            });
-    recentListWidget->setMinimumWidth(150);
-    recentListWidget->setMinimumHeight(200);
-    recentLayout->addWidget(recentListWidget);
 
     recentWidget->setLayout(recentLayout);
-    welcomeLayout->addWidget(recentWidget, 3);
+    recentWidget->setMinimumWidth(150);
+    recentWidget->setMinimumHeight(200);
+    recentScrollArea->setWidget(recentWidget);
+    welcomeLayout->addWidget(recentScrollArea, 3);
   }
 
   {
