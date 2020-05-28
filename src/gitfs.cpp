@@ -23,7 +23,7 @@ FS::FS(bool debug, const QString &path) : debug(debug),
  * @param hash
  * @return object data | []
  */
-QByteArray FS::readFromObject(const QString &hash) {
+QByteArray FS::readDataFromObjectFile(const QString &hash) {
   QFile file = QFile(path + "/objects/" + hash.mid(0, 2) + "/" + hash.mid(2));
   if (file.exists()) {
     try {
@@ -44,48 +44,48 @@ QByteArray FS::readFromObject(const QString &hash) {
  * @param hash
  * @return object data | []
  */
-QByteArray FS::readFromPackFile(const QString &hash) {
+QByteArray FS::readDataFromPackFiles(const QString &hash) {
   QDir folder = QDir(path + "/objects/pack");
   QStringList packFileList = folder.entryList(QStringList("*.pack"), QDir::Files | QDir::NoDotAndDotDot);
-  QByteArray data = QByteArray();
   for (const QString &packFile : packFileList) {
-    data = readFromSinglePackFile(packFile.mid(0, packFile.length() - 5), hash);
-    if (!data.isEmpty()) {
-      break;
+    QString pack = packFile.mid(0, packFile.length() - 5);
+    uint32_t offset = readOffsetFromPackIndexFile(pack, hash);
+    if (offset != 0U) {
+      QByteArray data = readDataFromPackDataFile(pack, offset);
+      if (!data.isEmpty()) {
+        return data;
+      }
     }
   }
-  return data;
+  return QByteArray();
 }
 
+
 /**
- * Read object data from a single packed file.
- * @param pack pack file without suffix
+ * Read object offset from a packed index file (v2).
+ * Format of pack files: https://git-scm.com/docs/pack-format
+ * @param pack file without suffix
  * @param hash
- * @return object data | []
+ * @return offset | 0
  */
-QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) {
-  QFile idxFile = QFile(path + "/objects/pack/" + pack + ".idx");
-  QFile pakFile = QFile(path + "/objects/pack/" + pack + ".pack");
-  if (!idxFile.exists() or !pakFile.exists()) {
-    return QByteArray();
+uint32_t FS::readOffsetFromPackIndexFile(const QString &pack, const QString &hash) {
+  QFile file = QFile(path + "/objects/pack/" + pack + ".idx");
+  if (!file.exists()) {
+    return 0;
   }
-  // format of pack files: https://git-scm.com/docs/pack-format
-  // find the offset in .idx file, and read data from .pack file.
-  QByteArray data = QByteArray();
-  idxFile.open(QFile::ReadOnly), pakFile.open(QFile::ReadOnly);
+  file.open(QFile::ReadOnly);
 
   int l = 0, r = 0, nr = 0;// binary search
   uint32_t offset = 0U;    // offset of data in pack file
-  idxFile.seek(1028);
-  QDataStream(idxFile.read(4)) >> nr, r = nr - 1;
+  file.seek(1028);
+  QDataStream(file.read(4)) >> nr, r = nr - 1;
   while (l <= r) {
     int m = (l + r) / 2;
-    idxFile.seek(1032 + m * 20);
-    QString cur = convertBytesToHash(idxFile.read(20));
+    file.seek(1032 + m * 20);
+    QString cur = convertBytesToHash(file.read(20));
     if (cur == hash) {
-      idxFile.seek(1032 + nr * 24 + m * 4);
-      offset = 0x0c; /* IDE cannot analyze the next line */
-      QDataStream(idxFile.read(4)) >> offset;
+      file.seek(1032 + nr * 24 + m * 4);
+      QDataStream(file.read(4)) >> offset;
       break;
     } else if (cur < hash) {
       l = m + 1;
@@ -93,20 +93,34 @@ QByteArray FS::readFromSinglePackFile(const QString &pack, const QString &hash) 
       r = m - 1;
     }
   }
+  file.close();
+  return 0U;
+}
+
+/**
+ * Read object data from a packed data file.
+ * Format of pack files: https://git-scm.com/docs/pack-format
+ * @param pack file without suffix
+ * @param hash
+ * @return object data | []
+ */
+QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
+  QFile file = QFile(path + "/objects/pack/" + pack + ".pack");
+  QByteArray data = QByteArray();
 
   if (offset != 0U) {
-    pakFile.seek(offset);
+    file.seek(offset);
     QByteArray lengthBytes = QByteArray();
     QByteArray buffer = QByteArray();
     do {
-      buffer = pakFile.read(1);
+      buffer = file.read(1);
       lengthBytes.push_back(buffer);
     } while ((uint32_t) buffer[0] & 0x8000U);
     uint32_t size = convertBytesToLength(lengthBytes);
-    data = pakFile.read(size);
+    data = file.read(size);
   }
 
-  idxFile.close(), pakFile.close();
+  file.close();
   return data;
 }
 
@@ -148,9 +162,9 @@ uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
 QByteArray FS::getObject(const QString &hash) {
   // object may be stored in object file or pack file.
   // we need to try both cases in order to get object data.
-  QByteArray data = readFromObject(hash);
+  QByteArray data = readDataFromObjectFile(hash);
   if (data.isEmpty()) {
-    data = readFromPackFile(hash);
+    data = readDataFromPackFiles(hash);
   }
   if (data.isEmpty()) {
     qDebug() << "object" << hash << "not found";

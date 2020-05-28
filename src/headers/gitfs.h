@@ -20,9 +20,10 @@ class FS {
   FS(bool debug, const QString &path);
 
  private: // Internal Methods
-  QByteArray readFromObject(const QString &hash);
-  QByteArray readFromPackFile(const QString &hash);
-  QByteArray readFromSinglePackFile(const QString &pack, const QString &hash);
+  QByteArray readDataFromObjectFile(const QString &hash);
+  QByteArray readDataFromPackFiles(const QString &hash);
+  uint32_t readOffsetFromPackIndexFile(const QString &pack, const QString &hash);
+  QByteArray readDataFromPackDataFile(const QString &pack, uint32_t offset);
 
  public: // Static Interfaces
   static QString convertBytesToHash(const QByteArray &bytes);
