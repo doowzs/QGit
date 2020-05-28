@@ -113,6 +113,7 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
     return QByteArray();
   }
 
+  uint32_t head = offset;// for parsing OFS_DELTA
   QFile file = QFile(path + "/objects/pack/" + pack + ".pack");
   file.open(QFile::ReadOnly);
   if (!file.isOpen()) {
@@ -139,8 +140,17 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
       break;
     }
     case OBJ_OFS_DELTA: {
-      // TODO
-      qDebug() << "OFS_DELTA found at" << pack << hex << offset;
+      uint32_t baseOffset = 0U;
+      buffer = file.read(1);
+      baseOffset = ((baseOffset << 7U) | ((uint32_t) buffer[0] & 0x7fU));
+      while ((uint32_t) buffer[0] & 0x80U) {
+        buffer = file.read(1);
+        baseOffset = (((baseOffset + 1U) << 7U) | ((uint32_t) buffer[0] & 0x7fU));
+      }
+      //qDebug() << "baseOffset" << hex << baseOffset << "->" << head - baseOffset;
+      QByteArray base = readDataFromPackDataFile(pack, head - baseOffset);
+      QByteArray delta = inflateCompressedData(file.read(compressBound(size)), size);
+      data = patchDeltifiedData(base, delta);
       break;
     }
     case OBJ_REF_DELTA: {
@@ -183,33 +193,30 @@ QByteArray FS::patchDeltifiedData(const QByteArray &base, const QByteArray &delt
   uint32_t baseOffset = 0U, dataOffset = 0U, copyLength = 0U;
   while (offset < delta.length()) {
     uint32_t op = (uint32_t) delta[offset++] & 0xffU;
-    qDebug() << "op @" << hex << offset << ":" << hex << op;
+    //qDebug() << "op @" << hex << offset << ":" << hex << op;
     if (op & 0x80U) {
       // copy instruction
       baseOffset = copyLength = 0U;
       for (uint32_t i = 0; i < 4; ++i) {
         if (op & (1U << i)) {
-          qDebug() << hex << (uint32_t) delta[offset];
+          //qDebug() << hex << (uint32_t) delta[offset];
           baseOffset |= ((uint32_t) delta[offset++] & 0xffU) << (i * 8U);
         }
       }
       for (uint32_t i = 0; i < 3; ++i) {
         if (op & (1U << (i + 4U))) {
-          qDebug() << hex << (uint32_t) delta[offset];
+          //qDebug() << hex << (uint32_t) delta[offset];
           copyLength |= ((uint32_t) delta[offset++] & 0xffU) << (i * 8U);
         }
       }
       if (copyLength == 0) {
         copyLength = 0x10000;
       }
-      qDebug() << "copy" << copyLength << "bytes from" << baseOffset << "to" << dataOffset;
+      //qDebug() << "copy" << copyLength << "bytes from" << baseOffset << "to" << dataOffset;
       std::copy(base.begin() + baseOffset, base.begin() + baseOffset + copyLength, data.begin() + dataOffset);
       dataOffset += copyLength;
     } else if (op != 0x00U) {
-      qDebug() << "insert" << op << "bytes to" << dataOffset;
-      for (int i = 0; i < op; ++i) {
-        qDebug() << delta[offset + i] << "(" << hex << (uint32_t) delta[offset + i] << ")";
-      }
+      //qDebug() << "insert" << op << "bytes to" << dataOffset;
       std::copy(delta.begin() + offset, delta.begin() + offset + op, data.begin() + dataOffset);
       offset += op, dataOffset += op;
     } else {
