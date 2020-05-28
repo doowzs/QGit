@@ -10,7 +10,9 @@
 
 #include <QtCore>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QFileDialog>
@@ -24,7 +26,12 @@ class Welcome final : public QWidget {
   const bool debug;
 
  private: // Widgets
-  QVBoxLayout *welcomeLayout{};
+  QHBoxLayout *welcomeLayout{};
+  QWidget *recentWidget{};
+  QVBoxLayout *recentLayout{};
+  QListWidget *recentListWidget{};
+  QWidget *menuWidget{};
+  QVBoxLayout *menuLayout{};
   QLabel *titleLabel{};
   QPushButton *openButton{};
   QPushButton *exitButton{};
@@ -32,7 +39,7 @@ class Welcome final : public QWidget {
   QLabel *authorLabel{};
 
  public: // Constructors
-  Welcome(bool debug, QWidget *parent);
+  Welcome(bool debug, const QStringList &recentList, QWidget *parent);
 
  Q_SIGNALS: // Signals
   void repositorySelected(const QString &path);

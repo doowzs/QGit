@@ -6,40 +6,72 @@
  */
 
 #include "welcome.h"
+
 #include "constants.h"
 using namespace QGit;
 
 /**
  * Initialize a welcome widget.
  */
-Welcome::Welcome(bool debug, QWidget *parent) : QWidget(parent), debug(debug) {
-  welcomeLayout = new QVBoxLayout(this);
+Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : QWidget(parent),
+                                                                               debug(debug) {
+  welcomeLayout = new QHBoxLayout(this);
 
-  titleLabel = new QLabel(this);
-  titleLabel->setAlignment(Qt::AlignCenter);
-  titleLabel->setFont(QFont(nullptr, 30));
-  titleLabel->setText(Constants::Application::name);
-  welcomeLayout->addWidget(titleLabel);
+  {
+    recentWidget = new QWidget(this);
+    recentLayout = new QVBoxLayout(recentWidget);
 
-  openButton = new QPushButton(this);
-  openButton->setText("打开仓库");
-  connect(openButton, &QPushButton::released, this, &Welcome::selectRepository);
-  welcomeLayout->addWidget(openButton);
+    recentListWidget = new QListWidget(recentWidget);
+    for (const QString &recent : recentList) {
+      auto *item = new QListWidgetItem(recent);
+      item->setText(recent);
+      recentListWidget->addItem(recent);
+    }
+    connect(recentListWidget, &QListWidget::itemDoubleClicked, this,
+            [&](QListWidgetItem *item) -> void {
+              emit repositorySelected(item->text());
+            });
+    recentListWidget->setMinimumWidth(150);
+    recentListWidget->setMinimumHeight(200);
+    recentLayout->addWidget(recentListWidget);
 
-  exitButton = new QPushButton(this);
-  exitButton->setText("退出程序");
-  connect(exitButton, &QPushButton::released, this, &Welcome::closeApplication);
-  welcomeLayout->addWidget(exitButton);
+    recentWidget->setLayout(recentLayout);
+    welcomeLayout->addWidget(recentWidget);
+  }
 
-  versionLabel = new QLabel(this);
-  versionLabel->setAlignment(Qt::AlignRight);
-  versionLabel->setText("Version " + Constants::Application::version.toString() + ", Qt " + QT_VERSION_STR);
-  welcomeLayout->addWidget(versionLabel);
+  {
+    menuWidget = new QWidget(this);
+    menuLayout = new QVBoxLayout(menuWidget);
 
-  authorLabel = new QLabel(this);
-  authorLabel->setAlignment(Qt::AlignRight);
-  authorLabel->setText("(C) " + QString::number(Constants::Application::year) + " " + Constants::Application::author);
-  welcomeLayout->addWidget(authorLabel);
+    titleLabel = new QLabel(menuWidget);
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setFont(QFont(nullptr, 30));
+    titleLabel->setText(Constants::Application::name);
+    menuLayout->addWidget(titleLabel);
+
+    openButton = new QPushButton(menuWidget);
+    openButton->setText("打开仓库");
+    connect(openButton, &QPushButton::released, this, &Welcome::selectRepository);
+    menuLayout->addWidget(openButton);
+
+    exitButton = new QPushButton(menuWidget);
+    exitButton->setText("退出程序");
+    connect(exitButton, &QPushButton::released, this, &Welcome::closeApplication);
+    menuLayout->addWidget(exitButton);
+
+    versionLabel = new QLabel(menuWidget);
+    versionLabel->setAlignment(Qt::AlignRight);
+    versionLabel->setText("Version " + Constants::Application::version.toString() + ", Qt " + QT_VERSION_STR);
+    menuLayout->addWidget(versionLabel);
+
+    authorLabel = new QLabel(menuWidget);
+    authorLabel->setAlignment(Qt::AlignRight);
+    authorLabel->setText("(C) " + QString::number(Constants::Application::year) + " " + Constants::Application::author);
+    menuLayout->addWidget(authorLabel);
+
+    menuWidget->setLayout(menuLayout);
+    welcomeLayout->addWidget(menuWidget);
+  }
 
   this->parentWidget()->setWindowTitle("欢迎使用");
   this->setLayout(welcomeLayout);

@@ -21,6 +21,7 @@ class Root final : public QMainWindow {
 
  private: // Members
   const bool debug;
+  QStringList recentList;
 
  private: // Widgets
   Welcome *welcomeWidget{};
