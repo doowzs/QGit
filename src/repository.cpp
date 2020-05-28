@@ -76,3 +76,8 @@ Repository::Repository(bool debug, const QString &path, QWidget *parent)
 Repository::~Repository() {
   delete this->fs;
 }
+
+void Repository::closeEvent(QCloseEvent *event) {
+  event->ignore();
+  emit repositoryClosed();
+}

@@ -8,10 +8,11 @@
 #ifndef QGIT_SRC_HEADERS_REPOSITORY_H_
 #define QGIT_SRC_HEADERS_REPOSITORY_H_
 
+#include <QCloseEvent>
 #include <QtCore>
-#include <QtWidgets/QWidget>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QWidget>
 
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
@@ -26,14 +27,14 @@ QT_FORWARD_DECLARE_CLASS(List)
 }
 
 class Repository final : public QWidget {
- Q_OBJECT
+  Q_OBJECT
 
- private: // Members
+ private:// Members
   const bool debug;
   QString root;
   FS *fs;
 
- private: // Widgets
+ private:// Widgets
   QVBoxLayout *repositoryLayout{};
   QLabel *titleLabel{};
   QLabel *helpLabel{};
@@ -43,10 +44,16 @@ class Repository final : public QWidget {
   Commit::List *commitList{};
   Snapshot *snapshotWindow{};
 
- public: // Constructors
+ public:// Constructors
   Repository(bool debug, const QString &path, QWidget *parent);
   ~Repository() override;
-};
-}
 
-#endif //QGIT_SRC_HEADERS_REPOSITORY_H_
+ public:// Override Methods
+  void closeEvent(QCloseEvent *event) override;
+
+ Q_SIGNALS:// Signals
+  void repositoryClosed();
+};
+}// namespace QGit
+
+#endif//QGIT_SRC_HEADERS_REPOSITORY_H_

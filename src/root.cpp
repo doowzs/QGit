@@ -6,14 +6,19 @@
  */
 
 #include "root.h"
-#include "welcome.h"
+
 #include "repository.h"
+#include "welcome.h"
 using namespace QGit;
 
 /**
  * Initialize a root / main window with path to git repository.
+ * @param debug
+ * @param path
+ * @param parent
  */
-Root::Root(bool debug, const QString &path, QWidget *parent) : QMainWindow(parent), debug(debug) {
+Root::Root(bool debug, const QString &path, QWidget *parent) : QMainWindow(parent),
+                                                               debug(debug) {
   QFile recentFile = QFile("recent.json");
   if (recentFile.exists()) {
     recentFile.open(QFile::ReadOnly);
@@ -62,7 +67,9 @@ void Root::openRepository(const QString &path) {
     }
 
     repositoryWidget = new Repository(debug, path, this);
+    connect(repositoryWidget, &Repository::repositoryClosed, this, &Root::closeRepository);
     repositoryWidget->show();
+    welcomeWidget->deleteLater();
     this->hide();
   } else {
     if (debug) {
@@ -70,4 +77,15 @@ void Root::openRepository(const QString &path) {
     }
     QMessageBox::about(this, "错误", "打开的目录不是Git仓库");
   }
+}
+
+/**
+ * Slot: if the repository window is closed, open the root window again.
+ */
+void Root::closeRepository() {
+  welcomeWidget = new Welcome(debug, recentList, this);
+  connect(welcomeWidget, &Welcome::repositorySelected, this, &Root::openRepository);
+  this->setCentralWidget(welcomeWidget);
+  this->show();
+  repositoryWidget->deleteLater();
 }

@@ -34,6 +34,7 @@ class Root final : public QMainWindow {
 
  private Q_SLOTS: // Slots
   void openRepository(const QString &path);
+  void closeRepository();
 };
 }// namespace QGit
 
