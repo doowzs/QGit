@@ -80,7 +80,7 @@ void List::loadCurrentTree() {
   items.clear();
 
   if (!current.isEmpty()) {
-    QByteArray data = fs->getDecompressedObject(current);
+    QByteArray data = fs->getObject(current);
     auto byte = data.constBegin() + data.indexOf('\0') + 1;
     while (byte < data.constEnd() - 20) {
       uint32_t mode = 0x000000;

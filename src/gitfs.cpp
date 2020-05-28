@@ -134,17 +134,22 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
     case OBJ_COMMIT:
     case OBJ_TREE:
     case OBJ_BLOB:
-    case OBJ_TAG:
-      data = file.read(size);
+    case OBJ_TAG: {
+      data = inflateCompressedData(file.read(compressBound(size)), size);
       break;
-    case OBJ_OFS_DELTA:
+    }
+    case OBJ_OFS_DELTA: {
       // TODO
       qDebug() << "OFS_DELTA found at" << pack << hex << offset;
       break;
-    case OBJ_REF_DELTA:
-      // TODO
-      qDebug() << "REF_DELTA found at" << pack << hex << offset;
+    }
+    case OBJ_REF_DELTA: {
+      QString baseHash = file.read(20).toHex();
+      QByteArray base = this->getObject(baseHash);
+      QByteArray delta = inflateCompressedData(file.read(compressBound(size)), size);
+      data = this->patchDeltifiedData(base, delta);
       break;
+    }
     default:
       qWarning() << "unknown object type at" << pack << offset;
   }
@@ -163,11 +168,11 @@ QByteArray FS::patchDeltifiedData(const QByteArray &base, const QByteArray &delt
   uint32_t offset = 0U;
   auto getLength = [&]() -> uint32_t {
     uint32_t ret = 0U, shift = 0U;
-    while ((uint32_t)delta[offset] & 0x80U) {
-      ret |= ((uint32_t)delta[offset++] & 0x7fU) << shift;
+    while ((uint32_t) delta[offset] & 0x80U) {
+      ret |= ((uint32_t) delta[offset++] & 0x7fU) << shift;
       shift += 7;
     }
-    ret |= ((uint32_t)delta[offset++] & 0x7fU) << shift; // last byte: msb not set
+    ret |= ((uint32_t) delta[offset++] & 0x7fU) << shift;// last byte: msb not set
     return ret;
   };
 
@@ -177,26 +182,34 @@ QByteArray FS::patchDeltifiedData(const QByteArray &base, const QByteArray &delt
   QByteArray data = QByteArray(dataLength, ' ');
   uint32_t baseOffset = 0U, dataOffset = 0U, copyLength = 0U;
   while (offset < delta.length()) {
-    uint32_t op = delta[offset++];
+    uint32_t op = (uint32_t) delta[offset++] & 0xffU;
+    qDebug() << "op @" << hex << offset << ":" << hex << op;
     if (op & 0x80U) {
       // copy instruction
       baseOffset = copyLength = 0U;
       for (uint32_t i = 0; i < 4; ++i) {
         if (op & (1U << i)) {
-          baseOffset |= (uint32_t)delta[offset++] << (i * 8U);
+          qDebug() << hex << (uint32_t) delta[offset];
+          baseOffset |= ((uint32_t) delta[offset++] & 0xffU) << (i * 8U);
         }
       }
       for (uint32_t i = 0; i < 3; ++i) {
         if (op & (1U << (i + 4U))) {
-          copyLength |= (uint32_t)delta[offset++] << (i * 8U);
+          qDebug() << hex << (uint32_t) delta[offset];
+          copyLength |= ((uint32_t) delta[offset++] & 0xffU) << (i * 8U);
         }
       }
       if (copyLength == 0) {
         copyLength = 0x10000;
       }
+      qDebug() << "copy" << copyLength << "bytes from" << baseOffset << "to" << dataOffset;
       std::copy(base.begin() + baseOffset, base.begin() + baseOffset + copyLength, data.begin() + dataOffset);
       dataOffset += copyLength;
     } else if (op != 0x00U) {
+      qDebug() << "insert" << op << "bytes to" << dataOffset;
+      for (int i = 0; i < op; ++i) {
+        qDebug() << delta[offset + i] << "(" << hex << (uint32_t) delta[offset + i] << ")";
+      }
       std::copy(delta.begin() + offset, delta.begin() + offset + op, data.begin() + dataOffset);
       offset += op, dataOffset += op;
     } else {
@@ -223,42 +236,19 @@ uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
 }
 
 /**
- * Read object data from .git/objects folder.
- * @param hash
- * @return object data | []
+ * Decompress a zlib compressed data.
+ * @param data
+ * @param size
+ * @return inflated data
  */
-QByteArray FS::getObject(const QString &hash) {
-  // object may be stored in object file or pack file.
-  // we need to try both cases in order to get object data.
-  QByteArray data = readDataFromObjectFile(hash);
-  if (data.isEmpty()) {
-    data = readDataFromPackFiles(hash);
-  }
-  if (data.isEmpty()) {
-    qDebug() << "object" << hash << "not found";
-  }
-  return data;
-}
-
-/**
- * Get decompressed data from a git object.
- * @param hash
- * @return decompressed data | []
- */
-QByteArray FS::getDecompressedObject(const QString &hash) {
-  QByteArray compressedData = getObject(hash);
-  if (compressedData.isEmpty()) {
-    return QByteArray();
-  }
-
-  // inflate commit data with zlib
-  uLong uncompressedLength = 4096;
+QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
+  uLong uncompressedLength = size == 0 ? 4096 : size;
   QByteArray uncompressedData = QByteArray(uncompressedLength, ' ');
   while (true) {
     int result = uncompress((Bytef *) uncompressedData.data(),
                             &uncompressedLength,
-                            (const Bytef *) compressedData.constData(),
-                            (uLong) compressedData.length() + 1);
+                            (const Bytef *) data.constData(),
+                            (uLong) data.length() + 1);
     if (result == Z_OK) {
       break;// uncompress OK
     } else if (result == Z_BUF_ERROR) {
@@ -275,12 +265,30 @@ QByteArray FS::getDecompressedObject(const QString &hash) {
 }
 
 /**
+ * Read object data from .git/objects folder.
+ * @param hash
+ * @return object data | []
+ */
+QByteArray FS::getObject(const QString &hash) {
+  // object may be stored in object file or pack file.
+  // we need to try both cases in order to get object data.
+  QByteArray data = inflateCompressedData(readDataFromObjectFile(hash), 0);
+  if (data.isEmpty()) {
+    data = readDataFromPackFiles(hash);
+  }
+  if (data.isEmpty()) {
+    qDebug() << "object" << hash << "not found";
+  }
+  return data;
+}
+
+/**
  * Get a text stream from zlib compressed object.
  * @param hash
  * @return text stream
  */
-QTextStream FS::getDecompressedStream(const QString &hash) {
-  QByteArray data = getDecompressedObject(hash);
+QTextStream FS::getStream(const QString &hash) {
+  QByteArray data = getObject(hash);
   for (int pos = 0; pos < data.length(); ++pos) {
     if (data.data()[pos] == '\0') {
       data.data()[pos] = '\n';// replace the first '\0' with '\n'

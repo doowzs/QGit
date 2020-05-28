@@ -18,7 +18,7 @@ using namespace QGit::Commit;
  */
 Item::Item(bool debug, const QString &hash, FS *fs, QListWidget *list)
     : QListWidgetItem(list), debug(debug), hash(hash) {
-  QTextStream stream = fs->getDecompressedStream(hash);
+  QTextStream stream = fs->getStream(hash);
 
   // read header of the commit
   QString buffer;

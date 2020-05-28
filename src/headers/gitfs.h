@@ -36,11 +36,11 @@ class FS {
 
  public:// Static Interfaces
   static uint32_t convertBytesToLength(const QByteArray &bytes);
+  static QByteArray inflateCompressedData(const QByteArray &data, uint32_t size);
 
  public:// Interfaces
   QByteArray getObject(const QString &hash);
-  QByteArray getDecompressedObject(const QString &hash);
-  QTextStream getDecompressedStream(const QString &hash);
+  QTextStream getStream(const QString &hash);
 };
 }// namespace QGit
 

@@ -26,7 +26,7 @@ void Detail::loadBlobContent(uint32_t mode, const QString &name, const QString &
   switch (mode) {
     case 0x100644: {
       /* file */
-      QByteArray data = fs->getDecompressedObject(hash);
+      QByteArray data = fs->getObject(hash);
       data = data.mid(data.indexOf('\0') + 1);
       this->setPlainText(QString(data));
       break;
