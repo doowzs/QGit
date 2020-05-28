@@ -23,8 +23,8 @@ using namespace QGit::Tree;
  * @param parent
  */
 List::List(bool debug, FS *fs, QWidget *parent) : QListWidget(parent),
-                                                                       debug(debug),
-                                                                       fs(fs) {
+                                                  debug(debug),
+                                                  fs(fs) {
   goBackItem = new QListWidgetItem(this);
   goBackItem->setText("../");
   this->addItem(goBackItem);
@@ -81,7 +81,10 @@ void List::loadCurrentTree() {
 
   if (!current.isEmpty()) {
     QByteArray data = fs->getObject(current);
-    auto byte = data.constBegin() + data.indexOf('\0') + 1;
+    auto byte = data.constBegin();
+    if (data.startsWith("tree ")) {
+      byte += data.indexOf('\0') + 1;
+    }
     while (byte < data.constEnd() - 20) {
       uint32_t mode = 0x000000;
       QString name = QString(), hash = QString();

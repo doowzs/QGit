@@ -249,7 +249,10 @@ uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
  * @return inflated data
  */
 QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
-  uLong uncompressedLength = size == 0U ? 4096 : size;
+  if (size == 0) {
+    size = 4096; // temporary buffer size
+  }
+  uLong uncompressedLength = size;
   QByteArray uncompressedData = QByteArray(uncompressedLength, ' ');
   while (true) {
     int result = uncompress((Bytef *) uncompressedData.data(),
@@ -260,7 +263,7 @@ QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
       break;// uncompress OK
     } else if (result == Z_BUF_ERROR) {
       // buffer is not large enough
-      uncompressedLength *= 2;
+      size *= 2, uncompressedLength = size;
       uncompressedData = QByteArray(uncompressedLength, ' ');
     } else {
       // fatal error occurred, abort the program
