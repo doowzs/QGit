@@ -34,7 +34,13 @@ Item::Item(bool debug, const QString &hash, FS *fs, QListWidget *list)
       } else if (type == "par" /* parent */) {
         parents.append(buffer.mid(7));
       } else if (type == "aut" /* author */) {
-        author = buffer.mid(7);
+        // extract commit date from the string
+        QString line = buffer.mid(7);
+        int offset = line.indexOf("> ") + 2;
+        author = line.mid(0, offset);
+        timestamp = line.mid(offset);
+        date.setTime_t((timestamp.split(' ').takeFirst()).toUInt());
+        author += date.toString();
       } else if (type == "com" /* committer */) {
         committer = buffer.mid(10);
       } else if (type == "gpg" /* gpg signature */) {
@@ -50,6 +56,15 @@ Item::Item(bool debug, const QString &hash, FS *fs, QListWidget *list)
   message = stream.atEnd() ? "" : stream.readAll();
 
   this->setText(hash.mid(0, 8) + " " + title);
+}
+
+/**
+ * Compare two commit object by commit date.
+ * @param rhs
+ * @return earlier?
+ */
+bool Item::operator<(const Item &rhs) const {
+  return date < rhs.date;
 }
 
 /**

@@ -22,18 +22,24 @@ class Item final : public QListWidgetItem {
   QString tree;
   QStringList parents;
   QString author;
+  QString timestamp;
   QString committer;
+  QDateTime date;
   QString title;
   QString message;
 
  public:// Constructors
   Item(bool debug, const QString &hash, FS *fs, QListWidget *list);
 
+ public:// Operators
+  bool operator<(const Item &rhs) const;
+
  public:// Interfaces
   [[nodiscard]] QString getHash() const;
   [[nodiscard]] QString getTree() const;
   [[nodiscard]] QStringList getParents() const;
   [[nodiscard]] QString getAuthor() const;
+  [[nodiscard]] QDateTime getDate() const;
   [[nodiscard]] QString getTitle() const;
   [[nodiscard]] QString getMessage() const;
 };
