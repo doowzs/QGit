@@ -7,9 +7,12 @@
 
 #include "welcome.h"
 
+#include <QFontDatabase>
+#include <QPainter>
+#include <QTextDocument>
+
 #include "IconFontCppHeaders/IconsFontAwesome5.h"
 #include "constants.h"
-#include <QFontDatabase>
 using namespace QGit;
 
 /**
@@ -21,30 +24,36 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
 
   if (!recentList.isEmpty()) {
     recentScrollArea = new QScrollArea(recentWidget);
+    recentScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    recentScrollArea->setWidgetResizable(true);
+    recentScrollArea->setFrameStyle(0);
+
     recentWidget = new QWidget(this);
     recentLayout = new QVBoxLayout(recentWidget);
     recentLayout->setAlignment(Qt::AlignTop);
+    recentLayout->setContentsMargins(0, 0, 0, 0);
 
     QFont fileFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     fileFont.setPointSize(12);
     for (const QString &recent : recentList) {
+      QTextDocument recentText;
+      recentText.setHtml("<h3 align=left>" + recent.mid(recent.lastIndexOf("/") + 1) + "</h3><code align=left>" + recent + "</code>");
+      QPixmap recentPixMap(recentText.size().width(), recentText.size().height());
+      recentPixMap.fill(Qt::transparent);
+      QPainter recentPainter(&recentPixMap);
+      recentText.drawContents(&recentPainter, recentPixMap.rect());
+
       auto recentItem = new QPushButton(recentWidget);
-      auto recentItemLayout = new QVBoxLayout(recentItem);
+      recentItem->setIcon(QIcon(recentPixMap));
+      recentItem->setIconSize(recentPixMap.rect().size().grownBy(QMargins(25, 5, 25, 5)));
+      connect(recentItem, &QPushButton::released, this,
+              [&]() -> void {
+                emit repositorySelected(recent);
+              });
 
-      auto recentNameLabel = new QLabel(recentItem);
-      recentNameLabel->setText(recent.mid(recent.lastIndexOf("/")));
-      recentItemLayout->addWidget(recentNameLabel);
-
-      auto recentFileLabel = new QLabel(recentItem);
-      recentFileLabel->setFont(fileFont);
-      recentFileLabel->setText(recent);
-      recentItemLayout->addWidget(recentFileLabel);
-
-      recentItem->setLayout(recentItemLayout);
       recentLayout->addWidget(recentItem);
       recentItems.push_back(recentItem);
     }
-
     recentWidget->setLayout(recentLayout);
     recentWidget->setMinimumWidth(150);
     recentWidget->setMinimumHeight(200);
