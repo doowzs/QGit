@@ -136,9 +136,13 @@ void Detail::loadCommit(const Item *item) {
   authorLabel->setText(item->getAuthor());
   titleLabel->setText(item->getTitle());
 
-  QString parentString = "Child commit of ";
-  for (const QString &parent : item->getParents()) {
-    parentString += "<code>" + parent.mid(0, 8) + "</code>";
+  QString parentString = "Child commit of";
+  QStringList parents = item->getParents();
+  for (int i = 0; i < parents.length(); ++i) {
+    parentString += "&nbsp;<code>" + parents[i].mid(0, 8) + "</code>";
+    if (i != parents.length() - 1) {
+      parentString += ",";
+    }
   }
   parentsLabel->setText(parentString);
 
