@@ -60,7 +60,7 @@ Detail::Detail(bool debug, QWidget *parent) : QWidget(parent),
     messageLayout->addWidget(messageIcon);
 
     auto messageInnerWidget = new QWidget(this);
-    auto messageInnerLayout = new QVBoxLayout(this);
+    auto messageInnerLayout = new QVBoxLayout(messageInnerWidget);
     messageInnerLayout->setContentsMargins(0, 0, 0, 0);
     {
       QFont titleFont = QFontDatabase::systemFont(QFontDatabase::TitleFont);
@@ -82,7 +82,7 @@ Detail::Detail(bool debug, QWidget *parent) : QWidget(parent),
 
   {
     auto parentWidget = new QWidget(this);
-    auto parentLayout = new QHBoxLayout(this);
+    auto parentLayout = new QHBoxLayout(parentWidget);
     parentLayout->setContentsMargins(0, 0, 0, 0);
 
     auto parentIcon = new QLabel(parentWidget);
@@ -102,7 +102,7 @@ Detail::Detail(bool debug, QWidget *parent) : QWidget(parent),
 
   {
     auto authorWidget = new QWidget(this);
-    auto authorLayout = new QHBoxLayout(this);
+    auto authorLayout = new QHBoxLayout(authorWidget);
     authorLayout->setContentsMargins(0, 0, 0, 0);
 
     auto authorIcon = new QLabel(authorWidget);
