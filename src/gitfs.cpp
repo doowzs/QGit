@@ -147,7 +147,7 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
       QString baseHash = file.read(20).toHex();
       QByteArray base = this->getObject(baseHash);
       QByteArray delta = inflateCompressedData(file.read(compressBound(size)), size);
-      data = this->patchDeltifiedData(base, delta);
+      data = patchDeltifiedData(base, delta);
       break;
     }
     default:
@@ -232,7 +232,7 @@ uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
   for (int i = 1; i < bytes.length(); ++i) {
     length |= ((uint32_t) bytes[i] & 0x7fU) << (7U * i - 3U);
   }
-  return compressBound(length);// bytes in file is size before compress
+  return length;// bytes in file is size before compress
 }
 
 /**
@@ -242,7 +242,7 @@ uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
  * @return inflated data
  */
 QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
-  uLong uncompressedLength = size == 0 ? 4096 : size;
+  uLong uncompressedLength = size == 0U ? 4096 : size;
   QByteArray uncompressedData = QByteArray(uncompressedLength, ' ');
   while (true) {
     int result = uncompress((Bytef *) uncompressedData.data(),
@@ -261,7 +261,8 @@ QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
       return QByteArray();
     }
   }
-  return uncompressedData.trimmed();
+  uncompressedData.resize(uncompressedLength);
+  return uncompressedData;
 }
 
 /**
@@ -272,14 +273,18 @@ QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
 QByteArray FS::getObject(const QString &hash) {
   // object may be stored in object file or pack file.
   // we need to try both cases in order to get object data.
-  QByteArray data = inflateCompressedData(readDataFromObjectFile(hash), 0);
-  if (data.isEmpty()) {
+  QByteArray data = readDataFromObjectFile(hash);
+  if (!data.isEmpty()) {
+    return inflateCompressedData(data, 0);
+  } else {
     data = readDataFromPackFiles(hash);
+    if (!data.isEmpty()) {
+      return data;
+    } else {
+      qWarning() << "object" << hash << "not found";
+      return QByteArray();
+    }
   }
-  if (data.isEmpty()) {
-    qDebug() << "object" << hash << "not found";
-  }
-  return data;
 }
 
 /**
