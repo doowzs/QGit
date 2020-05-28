@@ -39,7 +39,6 @@ class Item final : public QListWidgetItem {
   [[nodiscard]] QString getTree() const;
   [[nodiscard]] QStringList getParents() const;
   [[nodiscard]] QString getAuthor() const;
-  [[nodiscard]] QDateTime getDate() const;
   [[nodiscard]] QString getTitle() const;
   [[nodiscard]] QString getMessage() const;
 };

@@ -22,7 +22,6 @@ Item::Item(bool debug, const QString &hash, FS *fs, QListWidget *list)
 
   // read header of the commit
   QString buffer;
-  stream.readLine(); // skip first line: COMMIT SIZE \0
   while (true) {
     buffer = stream.readLine();
     if (buffer.isEmpty()) {
