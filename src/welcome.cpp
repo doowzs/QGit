@@ -7,7 +7,9 @@
 
 #include "welcome.h"
 
+#include "IconFontCppHeaders/IconsFontAwesome5.h"
 #include "constants.h"
+#include <QFontDatabase>
 using namespace QGit;
 
 /**
@@ -20,6 +22,9 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
   {
     recentWidget = new QWidget(this);
     recentLayout = new QVBoxLayout(recentWidget);
+
+    QFont recentFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    recentFont.setPointSize(12);
 
     recentListWidget = new QListWidget(recentWidget);
     for (const QString &recent : recentList) {
@@ -50,12 +55,14 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
     menuLayout->addWidget(titleLabel);
 
     openButton = new QPushButton(menuWidget);
-    openButton->setText("打开仓库");
+    openButton->setFont(QFont(FONT_ICON_FAMILY));
+    openButton->setText(QString(ICON_FA_FOLDER_OPEN) + QString(" 打开仓库"));
     connect(openButton, &QPushButton::released, this, &Welcome::selectRepository);
     menuLayout->addWidget(openButton);
 
     exitButton = new QPushButton(menuWidget);
-    exitButton->setText("退出程序");
+    exitButton->setFont(QFont(FONT_ICON_FAMILY));
+    exitButton->setText(QString(ICON_FA_DOOR_OPEN) + QString(" 退出程序"));
     connect(exitButton, &QPushButton::released, this, &Welcome::closeApplication);
     menuLayout->addWidget(exitButton);
 

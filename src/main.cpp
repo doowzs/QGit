@@ -1,10 +1,16 @@
 #include "constants.h"
 #include "root.h"
+#include "IconFontCppHeaders/IconsFontAwesome5.h"
 #include <QApplication>
+#include <QFontDatabase>
 using namespace QGit;
 
 int main(int argc, char *argv[]) {
   QApplication application(argc, argv);
+
+  if (QFontDatabase::addApplicationFont(FONT_ICON_FILE_NAME_FAS) < 0) {
+    qWarning() << "cannot load font awesome";
+  }
 
   QApplication::setOrganizationName(Constants::Application::author);
   QApplication::setApplicationName(Constants::Application::description);
