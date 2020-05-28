@@ -11,6 +11,7 @@
 #include <QtCore>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 
 namespace QGit {
 QT_FORWARD_DECLARE_CLASS(FS)
@@ -33,7 +34,11 @@ class Repository final : public QWidget {
   FS *fs;
 
  private: // Widgets
-  QHBoxLayout *repositoryLayout{};
+  QVBoxLayout *repositoryLayout{};
+  QLabel *titleLabel{};
+  QLabel *helpLabel{};
+  QWidget *contentWidget{};
+  QHBoxLayout *contentLayout{};
   Reference::List *referenceList{};
   Commit::List *commitList{};
   Snapshot *snapshotWindow{};
