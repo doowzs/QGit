@@ -32,6 +32,7 @@ class Welcome final : public QWidget {
   QListWidget *recentListWidget{};
   QWidget *menuWidget{};
   QVBoxLayout *menuLayout{};
+  QLabel *iconLabel{};
   QLabel *titleLabel{};
   QPushButton *openButton{};
   QPushButton *exitButton{};
