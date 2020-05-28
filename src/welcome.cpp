@@ -98,7 +98,10 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
  * After choosing a repository, emit signal for root to handle the selected path.
  */
 void Welcome::selectRepository() {
-  emit repositorySelected(QFileDialog::getExistingDirectory(this, "选择仓库目录"));
+  QString path = QFileDialog::getExistingDirectory(this, "选择仓库目录");
+  if (!path.isEmpty()) {
+    emit repositorySelected(path);
+  }
 }
 
 /**
