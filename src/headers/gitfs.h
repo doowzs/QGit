@@ -10,30 +10,38 @@
 
 #include <QtCore>
 
+// see https://git-scm.com/docs/pack-format
+#define OBJ_COMMIT 0x1
+#define OBJ_TREE 0x2
+#define OBJ_BLOB 0x3
+#define OBJ_TAG 0x4
+#define OBJ_OFS_DELTA 0x6
+#define OBJ_REF_DELTA 0x7
+
 namespace QGit {
 class FS {
- private: // Members
+ private:// Members
   const bool debug;
   const QString path;
 
- public: // Constructors
+ public:// Constructors
   FS(bool debug, const QString &path);
 
- private: // Internal Methods
+ private:// Internal Methods
   QByteArray readDataFromObjectFile(const QString &hash);
   QByteArray readDataFromPackFiles(const QString &hash);
   uint32_t readOffsetFromPackIndexFile(const QString &pack, const QString &hash);
   QByteArray readDataFromPackDataFile(const QString &pack, uint32_t offset);
 
- public: // Static Interfaces
+ public:// Static Interfaces
   static QString convertBytesToHash(const QByteArray &bytes);
   static uint32_t convertBytesToLength(const QByteArray &bytes);
 
- public: // Interfaces
+ public:// Interfaces
   QByteArray getObject(const QString &hash);
   QByteArray getDecompressedObject(const QString &hash);
   QTextStream getDecompressedStream(const QString &hash);
 };
-}
+}// namespace QGit
 
 #endif//QGIT_SRC_GITFS_H_

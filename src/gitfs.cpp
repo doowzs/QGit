@@ -32,6 +32,7 @@ QByteArray FS::readDataFromObjectFile(const QString &hash) {
       file.close();
       return data;
     } catch (const QException &e) {
+      qWarning() << "cannot open file" << file.fileName();
       return QByteArray();
     }
   } else {
@@ -60,7 +61,6 @@ QByteArray FS::readDataFromPackFiles(const QString &hash) {
   return QByteArray();
 }
 
-
 /**
  * Read object offset from a packed index file (v2).
  * Format of pack files: https://git-scm.com/docs/pack-format
@@ -74,6 +74,10 @@ uint32_t FS::readOffsetFromPackIndexFile(const QString &pack, const QString &has
     return 0;
   }
   file.open(QFile::ReadOnly);
+  if (!file.isOpen()) {
+    qWarning() << "cannot open file" << file.fileName();
+    return 0;
+  }
 
   int l = 0, r = 0, nr = 0;// binary search
   uint32_t offset = 0U;    // offset of data in pack file
@@ -94,7 +98,7 @@ uint32_t FS::readOffsetFromPackIndexFile(const QString &pack, const QString &has
     }
   }
   file.close();
-  return 0U;
+  return offset;
 }
 
 /**
@@ -105,21 +109,45 @@ uint32_t FS::readOffsetFromPackIndexFile(const QString &pack, const QString &has
  * @return object data | []
  */
 QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
-  QFile file = QFile(path + "/objects/pack/" + pack + ".pack");
-  QByteArray data = QByteArray();
-
-  if (offset != 0U) {
-    file.seek(offset);
-    QByteArray lengthBytes = QByteArray();
-    QByteArray buffer = QByteArray();
-    do {
-      buffer = file.read(1);
-      lengthBytes.push_back(buffer);
-    } while ((uint32_t) buffer[0] & 0x8000U);
-    uint32_t size = convertBytesToLength(lengthBytes);
-    data = file.read(size);
+  if (offset == 0U) {
+    return QByteArray();
   }
 
+  QFile file = QFile(path + "/objects/pack/" + pack + ".pack");
+  file.open(QFile::ReadOnly);
+  if (!file.isOpen()) {
+    qWarning() << "cannot open file" << file.fileName();
+    return QByteArray();
+  }
+
+  QByteArray data = QByteArray();
+  QByteArray bytes = QByteArray();
+  QByteArray buffer = QByteArray();
+  file.seek(offset);
+  do {
+    buffer = file.read(1);
+    bytes.push_back(buffer);
+  } while ((uint32_t) buffer[0] & 0x80U);
+  uint32_t type = ((uint32_t) bytes[0] & 0x70U) >> 4U;
+  uint32_t size = convertBytesToLength(bytes);
+  switch (type) {
+    case OBJ_COMMIT:
+    case OBJ_TREE:
+    case OBJ_BLOB:
+    case OBJ_TAG:
+      data = file.read(size);
+      break;
+    case OBJ_OFS_DELTA:
+      // TODO
+      qDebug() << "OFS_DELTA found at" << pack << offset;
+      break;
+    case OBJ_REF_DELTA:
+      // TODO
+      qDebug() << "REF_DELTA found at" << pack << offset;
+      break;
+    default:
+      qWarning() << "unknown object type at" << pack << offset;
+  }
   file.close();
   return data;
 }
