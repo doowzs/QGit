@@ -99,7 +99,7 @@ void List::loadCurrentTree() {
         hashBytes += *(byte++);
       }
       mode = modeString.toUInt(nullptr, 16);
-      hash = FS::convertBytesToHash(hashBytes);
+      hash = hashBytes.toHex();
 
       Item *item = new Item(mode, name, hash);
       this->addItem(item);

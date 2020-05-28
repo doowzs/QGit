@@ -86,7 +86,7 @@ uint32_t FS::readOffsetFromPackIndexFile(const QString &pack, const QString &has
   while (l <= r) {
     int m = (l + r) / 2;
     file.seek(1032 + m * 20);
-    QString cur = convertBytesToHash(file.read(20));
+    QString cur = file.read(20).toHex();
     if (cur == hash) {
       file.seek(1032 + nr * 24 + m * 4);
       QDataStream(file.read(4)) >> offset;
@@ -139,11 +139,11 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
       break;
     case OBJ_OFS_DELTA:
       // TODO
-      qDebug() << "OFS_DELTA found at" << pack << offset;
+      qDebug() << "OFS_DELTA found at" << pack << hex << offset;
       break;
     case OBJ_REF_DELTA:
       // TODO
-      qDebug() << "REF_DELTA found at" << pack << offset;
+      qDebug() << "REF_DELTA found at" << pack << hex << offset;
       break;
     default:
       qWarning() << "unknown object type at" << pack << offset;
@@ -207,23 +207,6 @@ QByteArray FS::patchDeltifiedData(const QByteArray &base, const QByteArray &delt
     qWarning() << "patched data does not match expected length";
   }
   return data;
-}
-
-/**
- * Convert a 20-byte array into a QString hash.
- * @param bytes
- * @return
- */
-QString FS::convertBytesToHash(const QByteArray &bytes) {
-  QString hash = QString();
-  for (int i = 0; i < 20; ++i) {
-    uint32_t byte = bytes[i];
-    uint32_t hi = (byte & 0xf0U) >> 4U;
-    uint32_t lo = byte & 0x0fU;
-    hash += (QChar)((hi > 0x9 ? 'a' - 0xa : '0') + hi);
-    hash += (QChar)((lo > 0x9 ? 'a' - 0xa : '0') + lo);
-  }
-  return hash;
 }
 
 /**

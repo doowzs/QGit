@@ -35,7 +35,6 @@ class FS {
   QByteArray patchDeltifiedData(const QByteArray &base, const QByteArray &delta);
 
  public:// Static Interfaces
-  static QString convertBytesToHash(const QByteArray &bytes);
   static uint32_t convertBytesToLength(const QByteArray &bytes);
 
  public:// Interfaces
