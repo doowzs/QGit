@@ -153,6 +153,63 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
 }
 
 /**
+ * Patch a deltified data into a git object.
+ * Referenced https://github.com/tarruda/node-git-core/blob/master/src/js/delta.js
+ * @param base
+ * @param delta
+ * @return
+ */
+QByteArray FS::patchDeltifiedData(const QByteArray &base, const QByteArray &delta) {
+  uint32_t offset = 0U;
+  auto getLength = [&]() -> uint32_t {
+    uint32_t ret = 0U, shift = 0U;
+    while ((uint32_t)delta[offset] & 0x80U) {
+      ret |= ((uint32_t)delta[offset++] & 0x7fU) << shift;
+      shift += 7;
+    }
+    ret |= ((uint32_t)delta[offset++] & 0x7fU) << shift; // last byte: msb not set
+    return ret;
+  };
+
+  uint32_t baseLength = getLength();
+  uint32_t dataLength = getLength();
+
+  QByteArray data = QByteArray(dataLength, ' ');
+  uint32_t baseOffset = 0U, dataOffset = 0U, copyLength = 0U;
+  while (offset < delta.length()) {
+    uint32_t op = delta[offset++];
+    if (op & 0x80U) {
+      // copy instruction
+      baseOffset = copyLength = 0U;
+      for (uint32_t i = 0; i < 4; ++i) {
+        if (op & (1U << i)) {
+          baseOffset |= (uint32_t)delta[offset++] << (i * 8U);
+        }
+      }
+      for (uint32_t i = 0; i < 3; ++i) {
+        if (op & (1U << (i + 4U))) {
+          copyLength |= (uint32_t)delta[offset++] << (i * 8U);
+        }
+      }
+      if (copyLength == 0) {
+        copyLength = 0x10000;
+      }
+      std::copy(base.begin() + baseOffset, base.begin() + baseOffset + copyLength, data.begin() + dataOffset);
+      dataOffset += copyLength;
+    } else if (op != 0x00U) {
+      std::copy(delta.begin() + offset, delta.begin() + offset + op, data.begin() + dataOffset);
+      offset += op, dataOffset += op;
+    } else {
+      qWarning() << "invalid op 0x00 at offset" << offset;
+    }
+  }
+  if (dataOffset != dataLength) {
+    qWarning() << "patched data does not match expected length";
+  }
+  return data;
+}
+
+/**
  * Convert a 20-byte array into a QString hash.
  * @param bytes
  * @return

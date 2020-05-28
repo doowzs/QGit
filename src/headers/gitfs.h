@@ -32,6 +32,7 @@ class FS {
   QByteArray readDataFromPackFiles(const QString &hash);
   uint32_t readOffsetFromPackIndexFile(const QString &pack, const QString &hash);
   QByteArray readDataFromPackDataFile(const QString &pack, uint32_t offset);
+  QByteArray patchDeltifiedData(const QByteArray &base, const QByteArray &delta);
 
  public:// Static Interfaces
   static QString convertBytesToHash(const QByteArray &bytes);
