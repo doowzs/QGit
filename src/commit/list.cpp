@@ -36,6 +36,10 @@ List::List(bool debug, FS *fs, QWidget *parent)
   });
 }
 
+/**
+ * Load commits from a git commit and its parents.
+ * @param hash
+ */
 void List::loadCommits(const QString &hash) {
   for (Item *item : items) {
     this->removeItemWidget(item);
