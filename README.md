@@ -230,3 +230,24 @@ blob 3356# Created by https://www.gitignore.io/api/qt,c++,code,macos,clion
 - 最高位为`0`为`insert`指令：从`delta`的后续中读取数据并插入到目标位置。
 
 差分的文件形式较为复杂，且文档中几乎没有什么介绍，所以项目实现时参考了Git的源代码和一个Node写的Git客户端["node-git-core"](https://github.com/tarruda/node-git-core/blob/master/src/js/delta.js)的代码。
+
+
+## 三、程序设计
+
+### 3.1 类关系图
+
+```
+namespace QGit
+      
+                   Root
+                  /    \
+            Welcome    Repository -- GitFS
+                      /          \
+                content           Snapshot
+               /       \         /        \
+            Ref       Commit    Commit    Tree
+            List      List      Detail    Panel
+
+```
+
+
