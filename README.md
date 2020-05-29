@@ -339,4 +339,9 @@ namespace QGit
 - `patchDeltifiedData`：解析delta指令，恢复差分表示的数据。
 
 
+## 四、程序运行
+
+### 4.1 命令行参数
+
+
 
