@@ -168,6 +168,52 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
 }
 
 /**
+ * Convert a N-byte array into a length integer.
+ * @param bytes
+ * @return unsigned int of length
+ */
+uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
+  auto length = (uint32_t) bytes[0] & 0x0fU;
+  for (int i = 1; i < bytes.length(); ++i) {
+    length |= ((uint32_t) bytes[i] & 0x7fU) << (7U * i - 3U);
+  }
+  return length;// bytes in file is size before compress
+}
+
+/**
+ * Decompress a zlib compressed data.
+ * @param data
+ * @param size
+ * @return inflated data
+ */
+QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
+  if (size == 0) {
+    size = 4096; // temporary buffer size
+  }
+  uLong uncompressedLength = size;
+  QByteArray uncompressedData = QByteArray(uncompressedLength, ' ');
+  while (true) {
+    int result = uncompress((Bytef *) uncompressedData.data(),
+                            &uncompressedLength,
+                            (const Bytef *) data.constData(),
+                            (uLong) data.length() + 1);
+    if (result == Z_OK) {
+      break;// uncompress OK
+    } else if (result == Z_BUF_ERROR) {
+      // buffer is not large enough
+      size *= 2, uncompressedLength = size;
+      uncompressedData = QByteArray(uncompressedLength, ' ');
+    } else {
+      // fatal error occurred, abort the program
+      qDebug() << "uncompress failed with code" << result;
+      return QByteArray();
+    }
+  }
+  uncompressedData.resize(uncompressedLength);
+  return uncompressedData;
+}
+
+/**
  * Patch a deltified data into a git object.
  * Referenced https://github.com/tarruda/node-git-core/blob/master/src/js/delta.js
  * @param base
@@ -227,52 +273,6 @@ QByteArray FS::patchDeltifiedData(const QByteArray &base, const QByteArray &delt
     qWarning() << "patched data does not match expected length";
   }
   return data;
-}
-
-/**
- * Convert a N-byte array into a length integer.
- * @param bytes
- * @return unsigned int of length
- */
-uint32_t FS::convertBytesToLength(const QByteArray &bytes) {
-  auto length = (uint32_t) bytes[0] & 0x0fU;
-  for (int i = 1; i < bytes.length(); ++i) {
-    length |= ((uint32_t) bytes[i] & 0x7fU) << (7U * i - 3U);
-  }
-  return length;// bytes in file is size before compress
-}
-
-/**
- * Decompress a zlib compressed data.
- * @param data
- * @param size
- * @return inflated data
- */
-QByteArray FS::inflateCompressedData(const QByteArray &data, uint32_t size) {
-  if (size == 0) {
-    size = 4096; // temporary buffer size
-  }
-  uLong uncompressedLength = size;
-  QByteArray uncompressedData = QByteArray(uncompressedLength, ' ');
-  while (true) {
-    int result = uncompress((Bytef *) uncompressedData.data(),
-                            &uncompressedLength,
-                            (const Bytef *) data.constData(),
-                            (uLong) data.length() + 1);
-    if (result == Z_OK) {
-      break;// uncompress OK
-    } else if (result == Z_BUF_ERROR) {
-      // buffer is not large enough
-      size *= 2, uncompressedLength = size;
-      uncompressedData = QByteArray(uncompressedLength, ' ');
-    } else {
-      // fatal error occurred, abort the program
-      qDebug() << "uncompress failed with code" << result;
-      return QByteArray();
-    }
-  }
-  uncompressedData.resize(uncompressedLength);
-  return uncompressedData;
 }
 
 /**

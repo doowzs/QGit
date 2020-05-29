@@ -32,11 +32,11 @@ class FS {
   QByteArray readDataFromPackFiles(const QString &hash);
   uint32_t readOffsetFromPackIndexFile(const QString &pack, const QString &hash);
   QByteArray readDataFromPackDataFile(const QString &pack, uint32_t offset);
-  static QByteArray patchDeltifiedData(const QByteArray &base, const QByteArray &delta);
 
  public:// Static Interfaces
   static uint32_t convertBytesToLength(const QByteArray &bytes);
   static QByteArray inflateCompressedData(const QByteArray &data, uint32_t size);
+  static QByteArray patchDeltifiedData(const QByteArray &base, const QByteArray &delta);
 
  public:// Interfaces
   QByteArray getObject(const QString &hash);
