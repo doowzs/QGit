@@ -25,7 +25,7 @@ Repository::Repository(bool debug, const QString &path, QWidget *parent)
     : QWidget(parent, Qt::Window),
       debug(debug),
       root(path),
-      fs(new FS(debug, path + "/.git")) {
+      fs(new FS(debug, path)) {
   repositoryLayout = new QVBoxLayout(this);
 
   titleLabel = new QLabel(this);
@@ -45,7 +45,7 @@ Repository::Repository(bool debug, const QString &path, QWidget *parent)
     contentLayout = new QHBoxLayout(contentWidget);
     contentLayout->setContentsMargins(0, 9, 0, 0);
 
-    referenceList = new Reference::List(debug, path + "/.git", this);
+    referenceList = new Reference::List(debug, path, this);
     contentLayout->addWidget(referenceList);
 
     commitList = new Commit::List(debug, fs, this);

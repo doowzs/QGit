@@ -33,7 +33,7 @@ class Root final : public QMainWindow {
  Q_SIGNALS: // Signals
 
  private Q_SLOTS: // Slots
-  void openRepository(const QString &path);
+  void openRepository(const QString &_path);
   void closeRepository();
 };
 }// namespace QGit

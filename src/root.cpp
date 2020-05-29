@@ -46,11 +46,19 @@ Root::Root(bool debug, const QString &path, QWidget *parent) : QMainWindow(paren
  * Slot: a repository is selected, check the path is a git directory or not.
  * If the directory is a git repository, then open it using a Repository widget.
  */
-void Root::openRepository(const QString &path) {
+void Root::openRepository(const QString &_path) {
   if (debug) {
-    qDebug() << "path:" << path;
+    qDebug() << "path:" << _path;
   }
+
+  // Bare repository does not have .git folder.
+  QString path = _path;
   if (QDir(path + "/.git").exists()) {
+    path += "/.git";
+  }
+
+  // Check for refs and objects folder, they are important.
+  if (QDir(path + "/refs").exists() and QDir(path + "/objects").exists()) {
     if (!recentList.contains(path)) {
       recentList.push_front(path);
     }
@@ -72,9 +80,6 @@ void Root::openRepository(const QString &path) {
     welcomeWidget->deleteLater();
     this->hide();
   } else {
-    if (debug) {
-      qDebug() << "error:" << path << "does not contain .git folder";
-    }
     QMessageBox::about(this, "错误", "打开的目录不是Git仓库");
   }
 }
