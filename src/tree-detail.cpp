@@ -5,7 +5,7 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "tree/detail.h"
+#include "tree-detail.h"
 
 #include "gitfs.h"
 using namespace QGit;

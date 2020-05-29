@@ -5,12 +5,12 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "tree/panel.h"
+#include "tree-panel.h"
 
-#include "commit/item.h"
-#include "tree/detail.h"
-#include "tree/list.h"
-#include "tree/item.h"
+#include "commit-item.h"
+#include "tree-detail.h"
+#include "tree-list.h"
+#include "tree-item.h"
 using namespace QGit;
 using namespace QGit::Tree;
 

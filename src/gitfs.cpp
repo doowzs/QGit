@@ -24,7 +24,7 @@ FS::FS(bool debug, const QString &path) : debug(debug),
  * @return object data | []
  */
 QByteArray FS::readDataFromObjectFile(const QString &hash) {
-  QFile file = QFile(path + "/objects/" + hash.mid(0, 2) + "/" + hash.mid(2));
+  QFile file(path + "/objects/" + hash.mid(0, 2) + "/" + hash.mid(2));
   if (file.exists()) {
     try {
       file.open(QFile::ReadOnly);
@@ -69,7 +69,7 @@ QByteArray FS::readDataFromPackFiles(const QString &hash) {
  * @return offset | 0
  */
 uint32_t FS::readOffsetFromPackIndexFile(const QString &pack, const QString &hash) {
-  QFile file = QFile(path + "/objects/pack/" + pack + ".idx");
+  QFile file(path + "/objects/pack/" + pack + ".idx");
   if (!file.exists()) {
     return 0;
   }
@@ -114,7 +114,7 @@ QByteArray FS::readDataFromPackDataFile(const QString &pack, uint32_t offset) {
   }
 
   uint32_t head = offset;// for parsing OFS_DELTA
-  QFile file = QFile(path + "/objects/pack/" + pack + ".pack");
+  QFile file(path + "/objects/pack/" + pack + ".pack");
   file.open(QFile::ReadOnly);
   if (!file.isOpen()) {
     qWarning() << "cannot open file" << file.fileName();
@@ -295,20 +295,4 @@ QByteArray FS::getObject(const QString &hash) {
       return QByteArray();
     }
   }
-}
-
-/**
- * Get a text stream from zlib compressed object.
- * @param hash
- * @return text stream
- */
-QTextStream FS::getStream(const QString &hash) {
-  QByteArray data = getObject(hash);
-  for (int pos = 0; pos < data.length(); ++pos) {
-    if (data.data()[pos] == '\0') {
-      data.data()[pos] = '\n';// replace the first '\0' with '\n'
-      break;
-    }
-  }
-  return QTextStream(data, QIODevice::ReadOnly);
 }

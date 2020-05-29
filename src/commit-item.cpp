@@ -5,7 +5,7 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "commit/item.h"
+#include "commit-item.h"
 #include "gitfs.h"
 using namespace QGit;
 using namespace QGit::Commit;
@@ -18,7 +18,7 @@ using namespace QGit::Commit;
  */
 Item::Item(bool debug, const QString &hash, FS *fs, QListWidget *list)
     : QListWidgetItem(list), debug(debug), hash(hash) {
-  QTextStream stream = fs->getStream(hash);
+  QTextStream stream(fs->getObject(hash), QIODevice::ReadOnly);
 
   // read header of the commit
   QString buffer;

@@ -5,7 +5,7 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "tree/item.h"
+#include "tree-item.h"
 
 #include <QFontDatabase>
 using namespace QGit::Tree;

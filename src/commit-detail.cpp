@@ -5,13 +5,13 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "commit/detail.h"
+#include "commit-detail.h"
 
 #include <QFontDatabase>
 
 #include "IconFontCppHeaders/IconsFontAwesome5.h"
-#include "commit/item.h"
-#include "tree/panel.h"
+#include "commit-item.h"
+#include "tree-panel.h"
 using namespace QGit;
 using namespace QGit::Commit;
 

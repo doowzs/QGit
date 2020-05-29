@@ -5,7 +5,7 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "reference/item.h"
+#include "reference-item.h"
 using namespace QGit::Reference;
 
 /**
@@ -32,7 +32,7 @@ Item::Item(bool debug, const QString &packed, QListWidget *parent) : QListWidget
  */
 Item::Item(bool debug, const QString &name, const QString &path, QListWidget *list)
     : QListWidgetItem(list), debug(debug), name(name) {
-  QFile headFile = QFile(path);
+  QFile headFile(path);
   headFile.open(QFile::ReadOnly);
   hash = QString(headFile.read(40));
   headFile.close();

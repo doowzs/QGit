@@ -19,7 +19,7 @@ using namespace QGit;
  */
 Root::Root(bool debug, const QString &path, QWidget *parent) : QMainWindow(parent),
                                                                debug(debug) {
-  QFile recentFile = QFile("recent.json");
+  QFile recentFile("recent.json");
   if (recentFile.exists()) {
     recentFile.open(QFile::ReadOnly);
     if (recentFile.isOpen()) {
@@ -65,7 +65,7 @@ void Root::openRepository(const QString &_path) {
     if (recentList.size() > 10) {
       recentList.pop_back();
     }
-    QFile recentFile = QFile("recent.json");
+    QFile recentFile("recent.json");
     recentFile.open(QFile::WriteOnly);
     if (recentFile.isOpen()) {
       QJsonArray recentArray = QJsonArray::fromStringList(recentList);

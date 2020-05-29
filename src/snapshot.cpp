@@ -7,10 +7,10 @@
 
 #include "snapshot.h"
 
-#include "commit/detail.h"
-#include "commit/item.h"
+#include "commit-detail.h"
+#include "commit-item.h"
 #include "gitfs.h"
-#include "tree/panel.h"
+#include "tree-panel.h"
 using namespace QGit;
 
 /**

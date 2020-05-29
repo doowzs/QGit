@@ -5,11 +5,11 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "reference/list.h"
+#include "reference-list.h"
 
 #include <QFontDatabase>
 
-#include "reference/item.h"
+#include "reference-item.h"
 using namespace QGit::Reference;
 
 /**
@@ -51,7 +51,7 @@ void List::updateReferenceItems() {
 }
 
 void List::searchPackedRefs() {
-  QFile file = QFile(path + "/packed-refs");
+  QFile file(path + "/packed-refs");
   if (!file.exists()) {
     return;
   }

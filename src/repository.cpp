@@ -7,10 +7,10 @@
 
 #include "repository.h"
 
-#include "commit/item.h"
-#include "commit/list.h"
+#include "commit-item.h"
+#include "commit-list.h"
 #include "gitfs.h"
-#include "reference/list.h"
+#include "reference-list.h"
 #include "snapshot.h"
 #include "IconFontCppHeaders/IconsFontAwesome5.h"
 using namespace QGit;

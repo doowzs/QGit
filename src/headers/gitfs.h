@@ -40,7 +40,6 @@ class FS {
 
  public:// Interfaces
   QByteArray getObject(const QString &hash);
-  QTextStream getStream(const QString &hash);
 };
 }// namespace QGit
 

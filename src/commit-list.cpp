@@ -5,12 +5,12 @@
  * Tianyun Zhang, 2020, all rights reserved.
  */
 
-#include "commit/list.h"
+#include "commit-list.h"
 
 #include <QFontDatabase>
 #include <algorithm>
 
-#include "commit/item.h"
+#include "commit-item.h"
 #include "gitfs.h"
 using namespace QGit;
 using namespace QGit::Commit;
