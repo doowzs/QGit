@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(qgit LANGUAGES CXX)
+project(QGit LANGUAGES CXX)
 
 add_definitions(-DCMAKE_VERSION_MAJOR=0)
 add_definitions(-DCMAKE_VERSION_MINOR=0)
@@ -24,5 +24,5 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 
 qt5_wrap_cpp(CMAKE_CXX_SOURCES ${CMAKE_CXX_HEADERS})
 qt5_add_resources(CMAKE_CXX_SOURCES ${CMAKE_CXX_RESOURCES})
-add_executable(qgit ${CMAKE_CXX_SOURCES})
-target_link_libraries(qgit Qt5::Core Qt5::Widgets ${ZLIB_LIBRARIES})
+add_executable(QGit ${CMAKE_CXX_SOURCES})
+target_link_libraries(QGit Qt5::Core Qt5::Widgets ${ZLIB_LIBRARIES})
