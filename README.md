@@ -15,6 +15,13 @@
 - 解析提交时的文件系统快照，并展示文件
 - 支持Git 1.6以后的packfile格式，不支持Git-LFS
 
+本次课程设计中使用的第三方代码：
+
+- [Qt 5.14.2](https://www.qt.io/)
+- [zlib 1.12.1](http://zlib.net/)
+- [Font Awesome 5](https://fontawesome.com/)
+- [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)（GPLv3）
+
 整个工程的代码目录结构如下：
 
 ```
@@ -338,7 +345,116 @@ namespace QGit
 
 ## 四、程序运行
 
-### 4.1 命令行参数
+### 4.1 编译方式
+
+本项目供配置了两个工具：CMake和QMake。
+
+如果机器上安装了Qt，可以通过设置`Qt5_DIR`环境变量，然后用CMake进行编译。例如：
+
+```shell
+$ export | grep Qt5_DIR
+Qt5_DIR=~/Developer/Qt/5.14.2/clang_64/lib/cmake/Qt5
+$ mkdir build && cd build
+$ cmake ../ && make
+$ ./qgit
+```
+
+也可以将Qt的可执行文件目录加入到`PATH`环境变量中，然后用QMake进行编译。CMake配置中没有设置版本号，只有用QMake编译才会注入配置文件中的版本号。
+
+```shell
+$ export PATH=~/Developer/Qt/5.14.2/clang_64/bin:$PATH
+$ qmake && make
+$ cd ./build/release # 不同平台编译的目标文件执行方式不同
+```
+
+Release版本不会链接Qt的动态库，可以使用`windeployqt`、`macdeployqt`等工具将程序运行所需的文件复制到目标文件夹中来准备运行环境。
+
+### 4.2 命令行参数
+
+在命令行中运行程序时，可以用`--help`选项来打印帮助信息：
+
+```shell
+$ ./QGit --help
+Usage: ./QGit [options]
+QGit: A Qt based Git browser.
+
+Options:
+  -h, --help     Displays help on commandline options.
+  --help-all     Displays help including Qt specific options.
+  -v, --version  Displays version information.
+  -d, --debug    Turn on debug mode
+```
+
+程序接受一个额外选项`--debug`，用来打开调试模式向终端输出一些信息（然而输出调试完之后都被删光了，所以基本没什么内容）。
+
+### 4.3 主窗口/欢迎窗口
+
+下面以macOS版本的程序为例展示程序的内容。当程序打开时首先展示欢迎页面，用户可以点击“打开仓库”按钮选择目录，或者点击“退出程序”按钮关闭程序。
+
+![Welcome](assets/welcome.png)
+
+如果用户此前已经打开过一些仓库，程序会读取相关记录并在左侧展示仓库目录列表：
+
+![Recent](assets/welcome-recent.png)
+
+当用户点击目录项目时即可打开对应的仓库。如果没有相关记录，点击“打开仓库”后即弹出对话框选择目录。此处用户可以选择仓库根目录，或者选择仓库中的`.git`文件夹，也可以选择bare仓库（通过`git clone --bare`获得）：
+
+![Open Repository](assets/welcome-open.png)
+
+此时用户可以选择一个文件夹作为仓库目录打开。如果选择的文件夹不包含Git仓库对应的必须文件，则程序弹出对话框提示错误：
+
+![Error on Opening](assets/welcome-error.png)
+
+### 4.4 仓库窗口
+
+用户成功打开一个仓库目录后，就会显示仓库窗口：
+
+![Repository](assets/repository.png)
+
+仓库窗口的左侧显示了Git仓库的分支/索引列表，右侧展示提交列表。一开始时提交列表为空，用户双击左侧的某个分支后，程序就会加载对应的提交内容并且展示在右侧。
+
+![Repository Reference](assets/repository-ref.png)
+
+### 4.5 快照窗口
+
+当用户在仓库窗口中双击某个提交项目时，就会显示快照窗口：
+
+![Snapshot](assets/snapshot.png)
+
+快照窗口的上方显示了提交的详细信息，左侧为文件目录，右侧展示文件内容，一开始为空。用户可以双击左侧展示的文件项目来查看快照中文件的内容，并对其中的文本进行复制：
+
+![Snapshot File](assets/snapshot-file.png)
+
+如果项目名称最后为`/`，则代表项目对应一个文件夹，用户可以双击进入该文件夹：
+
+![Snapshot Folder](assets/snapshot-folder.png)
+
+当用户不在快照的根目录时，文件列表顶部会出现`../`一项，用户双击即可返回到上一层目录中。
 
 
+## 五、实验中遇到的问题和感想
 
+### 5.1 遇到的问题与解决方案
+
+- 多窗口之间的切换效果（按下按钮后关闭这个窗口再打开另一个等效果）
+
+  解决方案：通过聚合实现多个子窗口和主窗口的关系，交给`QMainWindow`处理信号之后调整各个窗口的状态。同时保证Qt程序中至少有一个窗口可见，否则窗口全部隐藏则程序自动退出。
+
+- 删除对象的时候出现运行错误
+
+  解决方案：Qt中的对象（QWidget）等的生命周期是与`parent`绑定的，当`parent`消亡时，所有绑定的子对象都会被销毁。因此Qt程序中无需手动的去`delete`已经被绑定的对象，不会造成内存泄漏。同时为了防止销毁后处理信号时遇到异常，需要调用Qt的`deleteLater`函数来销毁对象而不是调用`delete`运算符。
+
+- CMake编译出来的程序无法打包
+  
+  解决方案：虽然CMake搭配CLion用起来很爽，但是最后只好改用QMake编译并用Qt的打包工具打包程序（真香）。
+
+- QMake不支持多个文件夹下的同名文件
+
+  解决方案：经过搜索，这是Qt编译工具2018年就已经被反馈的bug（[QTBUG-70874](https://bugreports.qt.io/browse/QTBUG-70874)）：生成MOC文件没有遵守`object_parallel_to_source`选项的语义把文件放到不同的文件夹中。然而这个问题到现在还没有被修复，使用QMake的子项目方式过于繁琐，所以解决方案只有修改文件名这一种方式了。
+
+### 5.2 实验感想/总结
+
+- Qt提供的各种库极大的简化了开发过程，同时与STL兼容性好、支持跨平台；但Qt的一堆宏定义、独特的编译工具也导致与传统C++程序、IDE、调试器兼容性不佳。
+- GUI程序开发过程中除了写程序运行逻辑，需要适应消息处理（Qt中的信号/槽函数）的运行逻辑，还需要了解处理布局、样式，综合起来难度很大。
+- Qt控件（如`QLabel`等）支持富文本，所以绘制控件样式可以用HTML代替，相对降低了一点的难度。
+- Qt程序运行需要附带动态链接库，打包也是一大难点。感谢吕云哲同学帮我测试运行Windows程序、郑奘巍同学帮我测试运行macOS程序。
