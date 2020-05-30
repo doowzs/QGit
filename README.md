@@ -367,7 +367,11 @@ $ qmake && make
 $ cd ./build/release # 不同平台编译的目标文件执行方式不同
 ```
 
-Release版本不会链接Qt的动态库，可以使用`windeployqt`、`macdeployqt`等工具将程序运行所需的文件复制到目标文件夹中来准备运行环境。
+Release版本不会链接Qt的动态库，可以使用`windeployqt`、`macdeployqt`等工具将程序运行所需的文件复制到目标文件夹中来准备运行环境；Linux环境下我使用`cqtdeploy`打包程序。不同平台的运行方式如下：
+
+- Windows：解压缩，然后运行`QGit.exe`；
+- Linux：解压缩，然后运行`QGit.sh`；
+- macOS：打开磁盘镜像文件，然后运行`QGit.app`。
 
 ### 4.2 命令行参数
 
