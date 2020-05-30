@@ -21,9 +21,12 @@
 QGit
 ├── CMakeLists.txt                            # CMake配置文件
 ├── LICENSE                                   # GPLv3
+├── QGit.pro                                  # QMake配置文件
 ├── README.md                                 # 此说明文档
 ├── assets                                    # 文档使用的一些素材
 ├── dist                                      # 预编译的可执行文件
+│   ├── QGit-darwin-1.1.0-amd64.dmg           # macOS App Bundle镜像文件
+│   └── QGit-windows-1.1.0-amd64.zip          # Windows二进制目录压缩包
 └── src                                       # 源代码目录
     ├── 3rdparty                              # 第三方代码
     │   └── IconFontCppHeaders                # 图标头文件
@@ -38,41 +41,35 @@ QGit
     │   │       └── fa-solid-900.ttf
     │   └── resources.qrc                     # Qt资源文件
     ├── headers                               # 头文件目录
-    │   ├── commit
-    │   │   ├── detail.h
-    │   │   ├── item.h
-    │   │   └── list.h
+    │   ├── commit-detail.h
+    │   ├── commit-item.h
+    │   ├── commit-list.h
     │   ├── constants.h                       # 全局常量
     │   ├── gitfs.h
-    │   ├── reference
-    │   │   ├── item.h
-    │   │   └── list.h
+    │   ├── reference-item.h
+    │   ├── reference-list.h
     │   ├── repository.h
     │   ├── root.h
     │   ├── snapshot.h
-    │   ├── tree
-    │   │   ├── detail.h
-    │   │   ├── item.h
-    │   │   ├── list.h
-    │   │   └── panel.h
+    │   ├── tree-detail.h
+    │   ├── tree-item.h
+    │   ├── tree-list.h
+    │   ├── tree-panel.h
     │   └── welcome.h
-    ├── reference                             # Git索引
-    │   ├── item.cpp                          # 单个索引类
-    │   └── list.cpp                          # 索引列表类
-    ├── commit                                # Git提交
-    │   ├── detail.cpp                        # 提交详细信息类
-    │   ├── item.cpp                          # 单个提交类
-    │   └── list.cpp                          # 提交列表类
-    ├── tree                                  # Git文件树
-    │   ├── detail.cpp                        # 文件详细类
-    │   ├── item.cpp                          # 单个结点类
-    │   ├── list.cpp                          # 结点列表类
-    │   └── panel.cpp                         # 文件树面板类
+    ├── commit-detail.cpp                     # 提交详细信息类
+    ├── commit-item.cpp                       # 单个提交类
+    ├── commit-list.cpp                       # 提交列表类
     ├── gitfs.cpp                             # Git文件系统类
     ├── main.cpp                              # 程序主入口
+    ├── reference-item.cpp                    # 单个索引类
+    ├── reference-list.cpp                    # 索引列表类
     ├── repository.cpp                        # Git仓库窗口类
     ├── root.cpp                              # 主窗口类
     ├── snapshot.cpp                          # Git快照窗口类
+    ├── tree-detail.cpp                       # 文件详细类
+    ├── tree-item.cpp                         # 单个结点类
+    ├── tree-list.cpp                         # 结点列表类
+    ├── tree-panel.cpp                        # 文件树面板类
     └── welcome.cpp                           # 欢迎窗口类
 ```
 
