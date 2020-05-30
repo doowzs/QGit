@@ -32,8 +32,9 @@ QGit
 ├── README.md                                 # 此说明文档
 ├── assets                                    # 文档使用的一些素材
 ├── dist                                      # 预编译的可执行文件
-│   ├── QGit-darwin-1.1.0-amd64.dmg           # macOS App Bundle镜像文件
-│   └── QGit-windows-1.1.0-amd64.zip          # Windows二进制目录压缩包
+│   ├── QGit-1.1.0-darwin-amd64.dmg           # macOS App Bundle镜像文件
+│   ├── QGit-1.1.0-linux-amd64.zip            # Linux二进制目录压缩包
+│   └── QGit-1.1.0-windows-amd64.zip          # Windows二进制目录压缩包
 └── src                                       # 源代码目录
     ├── 3rdparty                              # 第三方代码
     │   └── IconFontCppHeaders                # 图标头文件
