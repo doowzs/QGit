@@ -27,10 +27,13 @@ QByteArray FS::readDataFromObjectFile(const QString &hash) {
   QFile file(path + "/objects/" + hash.mid(0, 2) + "/" + hash.mid(2));
   if (file.exists()) {
     try {
+      QByteArray compressedData, decompressedData;
       file.open(QFile::ReadOnly);
-      QByteArray data = file.readAll();
+      compressedData = file.readAll();
       file.close();
-      return data;
+
+      decompressedData = inflateCompressedData(compressedData, 0);
+      return decompressedData.mid(decompressedData.indexOf('\u0000') + 1);
     } catch (const QException &e) {
       qWarning() << "cannot open file" << file.fileName();
       return QByteArray();
@@ -285,7 +288,7 @@ QByteArray FS::getObject(const QString &hash) {
   // we need to try both cases in order to get object data.
   QByteArray data = readDataFromObjectFile(hash);
   if (!data.isEmpty()) {
-    return inflateCompressedData(data, 0);
+    return data;
   } else {
     data = readDataFromPackFiles(hash);
     if (!data.isEmpty()) {
