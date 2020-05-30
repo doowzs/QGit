@@ -35,9 +35,16 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
 
     QFont fileFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     fileFont.setPointSize(12);
-    for (const QString &recent : recentList) {
+    for (const QString &_recent : recentList) {
       QTextDocument recentText;
-      recentText.setHtml("<h3 align=left>" + recent.mid(recent.lastIndexOf("/") + 1) + "</h3><code align=left>" + recent + "</code>");
+
+      QString recent = _recent;
+      QString recentName = recent.mid(recent.lastIndexOf("/") + 1);
+      if (recentName == ".git") {
+        recent = recent.mid(0, recent.lastIndexOf("/"));
+        recentName = recent.mid(recent.lastIndexOf("/") + 1);
+      }
+      recentText.setHtml("<h3 align=left>" + recentName + "</h3><code align=left>" + recent + "</code>");
       QPixmap recentPixMap(recentText.size().width(), recentText.size().height());
       recentPixMap.fill(Qt::transparent);
       QPainter recentPainter(&recentPixMap);
@@ -48,7 +55,7 @@ Welcome::Welcome(bool debug, const QStringList &recentList, QWidget *parent) : Q
       recentItem->setIconSize(recentPixMap.rect().size().grownBy(QMargins(25, 5, 25, 5)));
       connect(recentItem, &QPushButton::released, this,
               [&]() -> void {
-                emit repositorySelected(recent);
+                emit repositorySelected(_recent);
               });
 
       recentLayout->addWidget(recentItem);
